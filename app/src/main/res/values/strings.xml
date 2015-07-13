@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Blip</string>
+    <string name="action_download_all_comics">Downloading Comics</string>
+</resources>
