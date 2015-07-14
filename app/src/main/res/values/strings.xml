@@ -6,5 +6,5 @@
     <string name="message_no_transcript">No transcript was found for this comic</string>
     <string name="title_menu_random">Random</string>
     <string name="title_menu_search">Search</string>
-    <string name="hint_search">Comic Number or Title</string>
+    <string name="hint_search">Title</string>
 </resources>
