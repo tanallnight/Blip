@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Blip</string>
     <string name="action_download_all_comics">Downloading Comics</string>
+    <string name="action_download_all_comics_caption">About 2MB to Download</string>
+    <string name="action_download_all_comics_explain">Comics need to be Downloaded</string>
+    <string name="action_download_all_comics_explain_caption">About 2MB of text data needs to be downloaded to make the app experience fluid and support the search functionality</string>
+    <string name="button_start_download">Start Download</string>
     <string name="title_dialog_transcript">Transcript</string>
     <string name="negative_text_dialog">Close</string>
     <string name="message_no_transcript">No transcript was found for this comic</string>

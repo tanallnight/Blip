@@ -1,8 +1,8 @@
 <resources>
 
-    <style name="SpinnerStyle" parent="Base.Widget.AppCompat.Spinner.DropDown.ActionBar">
+    <style name="DownloadButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/accent</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:tint">@android:color/white</item>
     </style>
 
 </resources>
