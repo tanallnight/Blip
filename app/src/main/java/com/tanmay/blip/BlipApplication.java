@@ -18,9 +18,12 @@ package com.tanmay.blip;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.tanmay.blip.database.SharedPrefs;
+
+import io.fabric.sdk.android.Fabric;
 
 public class BlipApplication extends Application {
 
@@ -35,6 +38,7 @@ public class BlipApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         mInstance = this;
 
         int cacheSize = 10 * 1024 * 1024;

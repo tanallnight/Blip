@@ -16,6 +16,22 @@
 
 apply plugin: 'com.android.application'
 
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+apply plugin: 'io.fabric'
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -47,4 +63,7 @@ dependencies {
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
     compile 'com.google.code.gson:gson:2.3'
     compile 'com.afollestad:material-dialogs:0.7.6.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
+        transitive = true;
+    }
 }

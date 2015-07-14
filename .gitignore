@@ -23,3 +23,6 @@ _sandbox
 
 # Gradle Properties
 gradle.properties
+
+# Fabric API Stuff
+/app/fabric.properties

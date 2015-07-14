@@ -15,7 +15,6 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_text"
@@ -26,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:scaleType="fitCenter"
-        tools:src="@drawable/not_enough_work" />
+        android:scaleType="fitCenter" />
 
 </FrameLayout>

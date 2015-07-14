@@ -51,6 +51,9 @@
             android:name=".networking.XKCDDownloader"
             android:exported="false"/>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="258536ea9d0c2fdcde98b125a74461b024e6b54f" />
     </application>
 
 </manifest>

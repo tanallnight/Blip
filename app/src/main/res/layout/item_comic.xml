@@ -62,8 +62,7 @@
                 android:id="@+id/img"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:scaleType="centerCrop"
-                tools:src="@drawable/not_enough_work" />
+                android:scaleType="centerCrop" />
 
         </FrameLayout>
 
