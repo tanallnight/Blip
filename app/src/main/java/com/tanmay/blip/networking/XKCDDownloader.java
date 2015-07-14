@@ -12,6 +12,7 @@ import com.tanmay.blip.database.DatabaseManager;
 import com.tanmay.blip.models.Comic;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 public class XKCDDownloader extends IntentService {
 
@@ -71,19 +72,23 @@ public class XKCDDownloader extends IntentService {
     }
 
     private void downloadToday() {
-        Gson gson = new Gson();
         DatabaseManager databaseManager = new DatabaseManager(this);
-        Request request = new Request.Builder().url(LATEST_URL).build();
-        try {
-            Response response = BlipApplication.getInstance().client.newCall(request).execute();
-            if (!response.isSuccessful()) throw new IOException();
-            Comic comic = gson.fromJson(response.body().string(), Comic.class);
-            if (!databaseManager.comicExists(comic))
-                databaseManager.addComic(comic);
+        if (isStale(databaseManager)) {
+            Gson gson = new Gson();
+            Request request = new Request.Builder().url(LATEST_URL).build();
+            try {
+                Response response = BlipApplication.getInstance().client.newCall(request).execute();
+                if (!response.isSuccessful()) throw new IOException();
+                Comic comic = gson.fromJson(response.body().string(), Comic.class);
+                if (!databaseManager.comicExists(comic))
+                    databaseManager.addComic(comic);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
+            } catch (IOException e) {
+                e.printStackTrace();
+                LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+            }
+        } else {
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
-        } catch (IOException e) {
-            e.printStackTrace();
-            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
         }
     }
 
@@ -122,6 +127,16 @@ public class XKCDDownloader extends IntentService {
             e.printStackTrace();
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
         }
+    }
+
+    private boolean isStale(DatabaseManager databaseManager) {
+        Calendar calendar = Calendar.getInstance();
+        boolean updateDay = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY ||
+                calendar.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY ||
+                calendar.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
+        boolean existsInDB = databaseManager.dateExists(calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR));
+        return updateDay && !existsInDB;
     }
 
 }

@@ -92,6 +92,16 @@ public class DatabaseManager extends SQLiteOpenHelper {
         getWritableDatabase().insert(TABLE_XKCD, null, values);
     }
 
+    public void setFavourite(int num, boolean fav) {
+        if (!comicExists(getComic(num))) {
+            return;
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FAV, fav ? 1 : 0);
+        getWritableDatabase().update(TABLE_XKCD, contentValues, NUM + " = ?", new String[]{String.valueOf(num)});
+    }
+
     public Comic getComic(int num) {
         Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + NUM + " = ?",
                 new String[]{String.valueOf(num)});
@@ -102,23 +112,23 @@ public class DatabaseManager extends SQLiteOpenHelper {
             comic.setNum(cursor.getInt(1));
             comic.setLink(cursor.getString(2));
             comic.setYear(cursor.getString(3));
-            comic.setSafe_title(cursor.getString(4));
-            comic.setTranscript(cursor.getString(5));
-            comic.setAlt(cursor.getString(6));
-            comic.setImg(cursor.getString(7));
-            comic.setTitle(cursor.getString(8));
-            comic.setDay(cursor.getString(9));
-            comic.setFavourite(cursor.getInt(10) == 1);
+            comic.setNews(cursor.getString(4));
+            comic.setSafe_title(cursor.getString(5));
+            comic.setTranscript(cursor.getString(6));
+            comic.setAlt(cursor.getString(7));
+            comic.setImg(cursor.getString(8));
+            comic.setTitle(cursor.getString(9));
+            comic.setDay(cursor.getString(10));
+            comic.setFavourite(cursor.getInt(11) == 1);
             cursor.close();
             return comic;
         }
         return null;
     }
 
-    public List<Comic> getAllComics(int start, int stop) {
+    public List<Comic> getAllComics() {
         List<Comic> comics = Collections.emptyList();
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + NUM + " BETWEEN = ? AND = ?",
-                new String[]{String.valueOf(start), String.valueOf(stop)});
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD, null);
         if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
             comics = new ArrayList<>();
             do {
@@ -127,13 +137,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 comic.setNum(cursor.getInt(1));
                 comic.setLink(cursor.getString(2));
                 comic.setYear(cursor.getString(3));
-                comic.setSafe_title(cursor.getString(4));
-                comic.setTranscript(cursor.getString(5));
-                comic.setAlt(cursor.getString(6));
-                comic.setImg(cursor.getString(7));
-                comic.setTitle(cursor.getString(8));
-                comic.setDay(cursor.getString(9));
-                comic.setFavourite(cursor.getInt(10) == 1);
+                comic.setNews(cursor.getString(4));
+                comic.setSafe_title(cursor.getString(5));
+                comic.setTranscript(cursor.getString(6));
+                comic.setAlt(cursor.getString(7));
+                comic.setImg(cursor.getString(8));
+                comic.setTitle(cursor.getString(9));
+                comic.setDay(cursor.getString(10));
+                comic.setFavourite(cursor.getInt(11) == 1);
                 comics.add(comic);
             } while (cursor.moveToNext());
             cursor.close();
@@ -143,8 +154,8 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     public List<Comic> search(String keyWord) {
         List<Comic> comics = Collections.emptyList();
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + TITLE + " LIKE ?",
-                new String[]{keyWord});
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + TITLE +
+                " LIKE '%" + keyWord + "%'", null);
         if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
             comics = new ArrayList<>();
             do {
@@ -153,13 +164,55 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 comic.setNum(cursor.getInt(1));
                 comic.setLink(cursor.getString(2));
                 comic.setYear(cursor.getString(3));
-                comic.setSafe_title(cursor.getString(4));
-                comic.setTranscript(cursor.getString(5));
-                comic.setAlt(cursor.getString(6));
-                comic.setImg(cursor.getString(7));
-                comic.setTitle(cursor.getString(8));
-                comic.setDay(cursor.getString(9));
-                comic.setFavourite(cursor.getInt(10) == 1);
+                comic.setNews(cursor.getString(4));
+                comic.setSafe_title(cursor.getString(5));
+                comic.setTranscript(cursor.getString(6));
+                comic.setAlt(cursor.getString(7));
+                comic.setImg(cursor.getString(8));
+                comic.setTitle(cursor.getString(9));
+                comic.setDay(cursor.getString(10));
+                comic.setFavourite(cursor.getInt(11) == 1);
+                comics.add(comic);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return comics;
+    }
+
+    public List<Comic> getFeed() {
+        return getFeed(0);
+    }
+
+    public List<Comic> getFeed(int continuationNum) {
+        int continuation = getMax();
+        if (continuationNum != 0)
+            continuation = continuationNum;
+
+        int low = continuation - 20;
+        if (low < 1) {
+            low = 1;
+        }
+
+        List<Comic> comics = Collections.emptyList();
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + NUM + " <= ? AND " + NUM + " >= ?" +
+                        " ORDER BY " + NUM + " DESC",
+                new String[]{String.valueOf(continuation), String.valueOf(low)});
+        if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
+            comics = new ArrayList<>();
+            do {
+                Comic comic = new Comic();
+                comic.setMonth(cursor.getString(0));
+                comic.setNum(cursor.getInt(1));
+                comic.setLink(cursor.getString(2));
+                comic.setYear(cursor.getString(3));
+                comic.setNews(cursor.getString(4));
+                comic.setSafe_title(cursor.getString(5));
+                comic.setTranscript(cursor.getString(6));
+                comic.setAlt(cursor.getString(7));
+                comic.setImg(cursor.getString(8));
+                comic.setTitle(cursor.getString(9));
+                comic.setDay(cursor.getString(10));
+                comic.setFavourite(cursor.getInt(11) == 1);
                 comics.add(comic);
             } while (cursor.moveToNext());
             cursor.close();
@@ -178,18 +231,51 @@ public class DatabaseManager extends SQLiteOpenHelper {
                 comic.setNum(cursor.getInt(1));
                 comic.setLink(cursor.getString(2));
                 comic.setYear(cursor.getString(3));
-                comic.setSafe_title(cursor.getString(4));
-                comic.setTranscript(cursor.getString(5));
-                comic.setAlt(cursor.getString(6));
-                comic.setImg(cursor.getString(7));
-                comic.setTitle(cursor.getString(8));
-                comic.setDay(cursor.getString(9));
-                comic.setFavourite(cursor.getInt(10) == 1);
+                comic.setNews(cursor.getString(4));
+                comic.setSafe_title(cursor.getString(5));
+                comic.setTranscript(cursor.getString(6));
+                comic.setAlt(cursor.getString(7));
+                comic.setImg(cursor.getString(8));
+                comic.setTitle(cursor.getString(9));
+                comic.setDay(cursor.getString(10));
+                comic.setFavourite(cursor.getInt(11) == 1);
                 comics.add(comic);
             } while (cursor.moveToNext());
             cursor.close();
         }
         return comics;
+    }
+
+    public int getMax() {
+        int max = 0;
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT max(" + NUM + ") FROM " + TABLE_XKCD, null);
+        if (cursor != null && cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            max = cursor.getInt(0);
+            cursor.close();
+        }
+        return max;
+    }
+
+    public int getCount() {
+        int count = 0;
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD, null);
+        if (cursor != null && cursor.getCount() != 0) {
+            count = cursor.getCount();
+            cursor.close();
+        }
+        return count;
+    }
+
+    public boolean dateExists(int day, int month, int year) {
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + DAY + " = ? AND " +
+                MONTH + " = ? AND " + YEAR + " = ?", new String[]{String.valueOf(day), String.valueOf(month), String.valueOf(year)});
+        boolean exists = false;
+        if (cursor != null && cursor.getCount() != 0) {
+            exists = true;
+            cursor.close();
+        }
+        return exists;
     }
 
     public boolean comicExists(Comic comic) {

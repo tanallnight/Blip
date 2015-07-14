@@ -1,5 +1,8 @@
 <resources>
 
-
+    <style name="SpinnerStyle" parent="Base.Widget.AppCompat.Spinner.DropDown.ActionBar">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
 
 </resources>
