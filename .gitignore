@@ -26,3 +26,9 @@ gradle.properties
 
 # Fabric API Stuff
 /app/fabric.properties
+
+# Apk Files
+*.apk
+
+# Keystore
+blip_keystore.jks
