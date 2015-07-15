@@ -41,6 +41,7 @@ import com.squareup.picasso.Picasso;
 import com.tanmay.blip.BlipApplication;
 import com.tanmay.blip.BlipUtils;
 import com.tanmay.blip.R;
+import com.tanmay.blip.activities.AboutActivity;
 import com.tanmay.blip.activities.ImageActivity;
 import com.tanmay.blip.activities.SearchActivity;
 import com.tanmay.blip.database.DatabaseManager;
@@ -104,6 +105,9 @@ public class FavouritesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.search) {
             startActivity(new Intent(getActivity(), SearchActivity.class));
+            return true;
+        } else if (item.getItemId() == R.id.about) {
+            startActivity(new Intent(getActivity(), AboutActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -173,7 +177,7 @@ public class FavouritesFragment extends Fragment {
 
             TextView title, date, alt;
             ImageView img, favourite;
-            View browser, transcript, imgContainer;
+            View browser, transcript, imgContainer, share, explain;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -185,11 +189,15 @@ public class FavouritesFragment extends Fragment {
                 browser = itemView.findViewById(R.id.open_in_browser);
                 transcript = itemView.findViewById(R.id.transcript);
                 imgContainer = itemView.findViewById(R.id.img_container);
+                share = itemView.findViewById(R.id.share);
+                explain = itemView.findViewById(R.id.help);
 
                 browser.setOnClickListener(this);
                 transcript.setOnClickListener(this);
                 imgContainer.setOnClickListener(this);
                 favourite.setOnClickListener(this);
+                share.setOnClickListener(this);
+                explain.setOnClickListener(this);
             }
 
             @Override
@@ -219,6 +227,23 @@ public class FavouritesFragment extends Fragment {
                         comics.get(position).setFavourite(!fav);
                         databaseManager.setFavourite(comics.get(position).getNum(), !fav);
                         updateList();
+                        break;
+                    case R.id.help:
+                        Intent explainIntent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://www.explainxkcd.com/wiki/index.php/" + comics.get(position).getNum()));
+                        startActivity(explainIntent);
+                        break;
+                    case R.id.share:
+                        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        if (BlipUtils.isLollopopUp()) {
+                            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                        } else {
+                            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                        }
+                        shareIntent.putExtra(Intent.EXTRA_SUBJECT, comics.get(position).getTitle());
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, comics.get(position).getImg());
+                        startActivity(Intent.createChooser(shareIntent, getActivity().getResources().getString(R.string.tip_share_image_url)));
                         break;
                 }
             }

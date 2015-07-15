@@ -168,7 +168,7 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
 
             TextView title, date, alt;
             ImageView img, favourite;
-            View browser, transcript, imgContainer;
+            View browser, transcript, imgContainer, share, explain;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -180,11 +180,15 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
                 browser = itemView.findViewById(R.id.open_in_browser);
                 transcript = itemView.findViewById(R.id.transcript);
                 imgContainer = itemView.findViewById(R.id.img_container);
+                share = itemView.findViewById(R.id.share);
+                explain = itemView.findViewById(R.id.help);
 
                 browser.setOnClickListener(this);
                 transcript.setOnClickListener(this);
                 imgContainer.setOnClickListener(this);
                 favourite.setOnClickListener(this);
+                share.setOnClickListener(this);
+                explain.setOnClickListener(this);
             }
 
             @Override
@@ -220,6 +224,23 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
                             //make fav
                             favourite.setColorFilter(getResources().getColor(R.color.accent));
                         }
+                        break;
+                    case R.id.help:
+                        Intent explainIntent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://www.explainxkcd.com/wiki/index.php/" + comics.get(position).getNum()));
+                        startActivity(explainIntent);
+                        break;
+                    case R.id.share:
+                        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        if (BlipUtils.isLollopopUp()) {
+                            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                        } else {
+                            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                        }
+                        shareIntent.putExtra(Intent.EXTRA_SUBJECT, comics.get(position).getTitle());
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, comics.get(position).getImg());
+                        startActivity(Intent.createChooser(shareIntent, getResources().getString(R.string.tip_share_image_url)));
                         break;
                 }
             }

@@ -16,6 +16,8 @@
 
 package com.tanmay.blip;
 
+import android.os.Build;
+
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Response;
 
@@ -37,6 +39,10 @@ public class BlipUtils {
     public static int randInt(int min, int max) {
         Random rand = new Random();
         return rand.nextInt((max - min) + 1) + min;
+    }
+
+    public static boolean isLollopopUp() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
 }

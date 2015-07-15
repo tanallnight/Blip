@@ -17,7 +17,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tanmay.blip">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".BlipApplication"
@@ -30,8 +30,8 @@
             android:name=".activities.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -45,11 +45,16 @@
 
         <activity
             android:name=".activities.SearchActivity"
-            android:parentActivityName=".activities.MainActivity"/>
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
+            android:name=".activities.AboutActivity"
+            android:label="@string/title_menu_about"
+            android:parentActivityName=".activities.MainActivity" />
 
         <service
             android:name=".networking.XKCDDownloader"
-            android:exported="false"/>
+            android:exported="false" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
