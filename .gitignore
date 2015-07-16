@@ -30,5 +30,8 @@ gradle.properties
 # Apk Files
 *.apk
 
+# Windows Thumbs DB Files
+Thumbs.db
+
 # Keystore
 blip_keystore.jks
