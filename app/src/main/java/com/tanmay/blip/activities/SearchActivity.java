@@ -16,6 +16,7 @@
 
 package com.tanmay.blip.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,10 +37,11 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.tanmay.blip.BlipApplication;
-import com.tanmay.blip.BlipUtils;
 import com.tanmay.blip.R;
 import com.tanmay.blip.database.DatabaseManager;
 import com.tanmay.blip.models.Comic;
+import com.tanmay.blip.utils.BlipUtils;
+import com.tanmay.blip.utils.SpeechSynthesizer;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -193,7 +195,7 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
 
             @Override
             public void onClick(View v) {
-                int position = getAdapterPosition();
+                final int position = getAdapterPosition();
                 switch (v.getId()) {
                     case R.id.open_in_browser:
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://xkcd.com/" + comics.get(position).getNum()));
@@ -204,10 +206,32 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
                         if (content.equals("")) {
                             content = getResources().getString(R.string.message_no_transcript);
                         }
+                        final String speakingContent = content;
                         new MaterialDialog.Builder(SearchActivity.this)
                                 .title(R.string.title_dialog_transcript)
                                 .content(content)
                                 .negativeText(R.string.negative_text_dialog)
+                                .neutralText(R.string.neutral_text_dialog_speak)
+                                .autoDismiss(false)
+                                .callback(new MaterialDialog.ButtonCallback() {
+                                    @Override
+                                    public void onNegative(MaterialDialog dialog) {
+                                        super.onNegative(dialog);
+                                        dialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onNeutral(MaterialDialog dialog) {
+                                        super.onNeutral(dialog);
+                                        SpeechSynthesizer.getInstance().convertToSpeechFlush(speakingContent);
+                                    }
+                                })
+                                .dismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                        SpeechSynthesizer.getInstance().stopSpeaking();
+                                    }
+                                })
                                 .show();
                         break;
                     case R.id.img_container:

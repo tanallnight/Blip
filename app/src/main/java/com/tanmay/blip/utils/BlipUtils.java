@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tanmay.blip;
+package com.tanmay.blip.utils;
 
 import android.os.Build;
 
@@ -43,6 +43,15 @@ public class BlipUtils {
 
     public static boolean isLollopopUp() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
+    public static boolean isNumeric(String input) {
+        try {
+            int num = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -22,6 +22,7 @@ import com.crashlytics.android.Crashlytics;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 import com.tanmay.blip.database.SharedPrefs;
+import com.tanmay.blip.utils.SpeechSynthesizer;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -46,5 +47,12 @@ public class BlipApplication extends Application {
         client.setCache(cache);
 
         SharedPrefs.create(this);
+        SpeechSynthesizer.create(this);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        SpeechSynthesizer.getInstance().cleanup();
     }
 }

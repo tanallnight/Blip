@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.tanmay.blip.models.Comic;
+import com.tanmay.blip.utils.BlipUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,8 +171,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     public List<Comic> search(String keyWord) {
         List<Comic> comics = Collections.emptyList();
+        int num = 0;
+        if (BlipUtils.isNumeric(keyWord)) {
+            num = Integer.parseInt(keyWord);
+        }
         Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + TITLE +
-                " LIKE '%" + keyWord + "%'", null);
+                " LIKE '%" + keyWord + "%' OR " + NUM + " = " + num, null);
         if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
             comics = new ArrayList<>();
             do {
