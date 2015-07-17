@@ -66,6 +66,22 @@ public class MainActivity extends BaseActivity {
 
         if (SharedPrefs.getInstance().getFirstRun()) {
             startActivityForResult(new Intent(this, DownloadActivity.class), DOWNLOAD_REQUEST);
+        } else if (System.currentTimeMillis() - SharedPrefs.getInstance().getLastRedownloadTime() > 259200000) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(XKCDDownloader.DOWNLOAD_SUCCESS);
+            intentFilter.addAction(XKCDDownloader.DOWNLOAD_FAIL);
+            LocalBroadcastManager.getInstance(this).registerReceiver(downloadReceiver, intentFilter);
+            Intent intent = new Intent(this, XKCDDownloader.class);
+            intent.setAction(XKCDDownloader.DOWNLOAD_LAST_TEN);
+            startService(intent);
+        } else if (System.currentTimeMillis() - SharedPrefs.getInstance().getLastTranscriptCheckTime() > 604800000) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(XKCDDownloader.DOWNLOAD_SUCCESS);
+            intentFilter.addAction(XKCDDownloader.DOWNLOAD_FAIL);
+            LocalBroadcastManager.getInstance(this).registerReceiver(downloadReceiver, intentFilter);
+            Intent intent = new Intent(this, XKCDDownloader.class);
+            intent.setAction(XKCDDownloader.DOWNLOAD_TRANSCRIPT);
+            startService(intent);
         } else {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(XKCDDownloader.DOWNLOAD_SUCCESS);
@@ -75,7 +91,6 @@ public class MainActivity extends BaseActivity {
             intent.setAction(XKCDDownloader.DOWNLOAD_TODAY);
             startService(intent);
         }
-
     }
 
     private void setUpViews() {

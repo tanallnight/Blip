@@ -27,9 +27,11 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.tanmay.blip.BlipApplication;
 import com.tanmay.blip.database.DatabaseManager;
+import com.tanmay.blip.database.SharedPrefs;
 import com.tanmay.blip.models.Comic;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -46,6 +48,8 @@ public class XKCDDownloader extends IntentService {
     public static final String DOWNLOAD_TODAY = "com.tanmay.blip.DOWNLOAD_TODAY";
     public static final String DOWNLOAD_ALL = "com.tanmay.blip.DOWNLOAD_ALL";
     public static final String DOWNLOAD_SPECIFIC = "com.tanmay.blip.DOWNLOAD_SPECIFIC";
+    public static final String DOWNLOAD_TRANSCRIPT = "com.tanmay.blip.DOWNLOAD_TRANSCRIPT";
+    public static final String DOWNLOAD_LAST_TEN = "com.tanmay.blip.DOWNLOAD_LAST_TEN";
 
     public static final String COMIC_NUM = "comicNum";
     public static final String PROGRESS = "progress";
@@ -69,12 +73,17 @@ public class XKCDDownloader extends IntentService {
                 downloadAll();
                 break;
             case DOWNLOAD_SPECIFIC:
-                downloadSpecifice(intent.getExtras().getInt(COMIC_NUM));
+                downloadSpecific(intent.getExtras().getInt(COMIC_NUM));
                 break;
+            case DOWNLOAD_TRANSCRIPT:
+                downloadAllMissingTranscripts();
+                break;
+            case DOWNLOAD_LAST_TEN:
+                redownloadLastTen();
         }
     }
 
-    private void downloadSpecifice(int i) {
+    private void downloadSpecific(int i) {
         Gson gson = new Gson();
         DatabaseManager databaseManager = new DatabaseManager(this);
         String url = String.format(COMICS_URL, i);
@@ -108,6 +117,112 @@ public class XKCDDownloader extends IntentService {
         }
     }
 
+    private void redownloadLastTen() {
+        final Gson gson = new Gson();
+        final DatabaseManager databaseManager = new DatabaseManager(this);
+        try {
+            Request todayReq = new Request.Builder().url(LATEST_URL).build();
+            Response response = BlipApplication.getInstance().client.newCall(todayReq).execute();
+            if (!response.isSuccessful()) throw new IOException();
+            Comic comic = gson.fromJson(response.body().string(), Comic.class);
+            final CountDownLatch latch = new CountDownLatch(10);
+            final Executor executor = Executors.newFixedThreadPool(5);
+            int num = comic.getNum();
+            for (int i = num - 9; i <= num; i++) {
+                final int index = i;
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String url = String.format(COMICS_URL, index);
+                            Request request = new Request.Builder().url(url).build();
+                            Response response = BlipApplication.getInstance().client.newCall(request).execute();
+                            if (!response.isSuccessful()) throw new IOException();
+                            String responseBody = response.body().string();
+                            Comic comic = null;
+                            try {
+                                comic = gson.fromJson(responseBody, Comic.class);
+                            } catch (JsonSyntaxException e) {
+                                Crashlytics.log(1, "XKCDDownloader", e.getMessage() + " POS:" + index);
+                            }
+                            if (comic != null) {
+                                if (databaseManager.comicExists(comic)) {
+                                    databaseManager.updateComic(comic);
+                                } else {
+                                    databaseManager.addComic(comic);
+                                }
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+                        } finally {
+                            latch.countDown();
+                        }
+                    }
+                });
+            }
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+            }
+
+            SharedPrefs.getInstance().setLastRedownladTime(System.currentTimeMillis());
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
+
+        } catch (IOException e) {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+        }
+    }
+
+    private void downloadAllMissingTranscripts() {
+        final Gson gson = new Gson();
+        final DatabaseManager databaseManager = new DatabaseManager(this);
+        List<Integer> nums = databaseManager.getAllMissingTranscripts();
+
+        final CountDownLatch latch = new CountDownLatch(nums.size());
+        final Executor executor = Executors.newFixedThreadPool(nums.size() / 2);
+        for (int i : nums) {
+            final int index = i;
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String url = String.format(COMICS_URL, index);
+                        Request request = new Request.Builder().url(url).build();
+                        Response response = BlipApplication.getInstance().client.newCall(request).execute();
+                        if (!response.isSuccessful()) throw new IOException();
+                        String responseBody = response.body().string();
+                        Comic comic = null;
+                        try {
+                            comic = gson.fromJson(responseBody, Comic.class);
+                        } catch (JsonSyntaxException e) {
+                            Crashlytics.log(1, "XKCDDownloader", e.getMessage() + " POS:" + index);
+                        }
+                        if (comic != null) {
+                            databaseManager.updateComic(comic);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+                    } finally {
+                        latch.countDown();
+                    }
+                }
+            });
+        }
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+        }
+        SharedPrefs.getInstance().setLastTranscriptCheckTime(System.currentTimeMillis());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
+
+    }
+
     private void downloadAll() {
         final Gson gson = new Gson();
         final DatabaseManager databaseManager = new DatabaseManager(this);
@@ -132,7 +247,7 @@ public class XKCDDownloader extends IntentService {
                                 String url = String.format(COMICS_URL, index);
                                 Request newReq = new Request.Builder().url(url).build();
                                 Response newResp = BlipApplication.getInstance().client.newCall(newReq).execute();
-                                if (!response.isSuccessful()) throw new IOException();
+                                if (!newResp.isSuccessful()) throw new IOException();
                                 String resp = newResp.body().string();
                                 Comic comic1 = null;
                                 try {

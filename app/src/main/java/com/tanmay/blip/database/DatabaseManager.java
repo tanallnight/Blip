@@ -119,6 +119,28 @@ public class DatabaseManager extends SQLiteOpenHelper {
         getWritableDatabase().update(TABLE_XKCD, contentValues, NUM + " = ?", new String[]{String.valueOf(num)});
     }
 
+    public void updateComic(Comic comic) {
+        if (!comicExists(comic)) {
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(MONTH, comic.getMonth());
+        values.put(NUM, comic.getNum());
+        values.put(LINK, comic.getLink());
+        values.put(YEAR, comic.getYear());
+        values.put(NEWS, comic.getNews());
+        values.put(SAFE_TITLE, comic.getSafe_title());
+        values.put(TRANSCRIPT, comic.getTranscript());
+        values.put(ALT, comic.getAlt());
+        values.put(IMG, comic.getImg());
+        values.put(TITLE, comic.getTitle());
+        values.put(DAY, comic.getDay());
+        values.put(FAV, comic.isFavourite() ? 1 : 0);
+
+        getWritableDatabase().update(TABLE_XKCD, values, NUM + " = ?", new String[]{String.valueOf(comic.getNum())});
+    }
+
     public Comic getComic(int num) {
         Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + NUM + " = ?",
                 new String[]{String.valueOf(num)});
@@ -167,6 +189,21 @@ public class DatabaseManager extends SQLiteOpenHelper {
             cursor.close();
         }
         return comics;
+    }
+
+    public List<Integer> getAllMissingTranscripts() {
+        List<Integer> nums = Collections.emptyList();
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT " + NUM + " FROM " +
+                TABLE_XKCD + " WHERE " + TRANSCRIPT + " = ''", null);
+        if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
+            nums = new ArrayList<>();
+            do {
+                nums.add(cursor.getInt(0));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return nums;
     }
 
     public List<Comic> search(String keyWord) {
