@@ -16,29 +16,37 @@
 
 package com.tanmay.blip.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.tanmay.blip.R;
 import com.tanmay.blip.database.DatabaseManager;
 import com.tanmay.blip.models.Comic;
+import com.tanmay.blip.utils.BlipUtils;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class ImageActivity extends AppCompatActivity {
+public class ImageActivity extends AppCompatActivity implements PhotoViewAttacher.OnPhotoTapListener, View.OnClickListener {
 
     public static final String EXTRA_NUM = "num";
     public static final String EXTRA_IMAGE = "comic";
+    ImageView photo;
     private DatabaseManager databaseManager;
+    private View topBar, close;
+    private TextView title;
 
     public static void launch(AppCompatActivity compatActivity, View transistionView, int num) {
         ActivityOptionsCompat options =
@@ -48,23 +56,44 @@ public class ImageActivity extends AppCompatActivity {
         ActivityCompat.startActivity(compatActivity, intent, options.toBundle());
     }
 
+    @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (BlipUtils.isLollopopUp()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
         databaseManager = new DatabaseManager(this);
         int num = getIntent().getExtras().getInt(EXTRA_NUM);
-        Comic comic = databaseManager.getComic(num);
+        final Comic comic = databaseManager.getComic(num);
 
-        ImageView imageView = (ImageView) findViewById(R.id.img);
-        ViewCompat.setTransitionName(imageView, EXTRA_IMAGE);
-        imageView.setPadding(0, getStatusBarHeight(), 0, getNavigationBarHeight());
-        Picasso.with(this).load(comic.getImg()).into(imageView);
-        new PhotoViewAttacher(imageView);
+        topBar = findViewById(R.id.topBar);
+        close = findViewById(R.id.close);
+        title = (TextView) findViewById(R.id.title);
+
+        close.setOnClickListener(this);
+        title.setText(comic.getTitle());
+        photo = (ImageView) findViewById(R.id.img);
+        ViewCompat.setTransitionName(photo, EXTRA_IMAGE);
+        topBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                topBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                if (BlipUtils.isLollopopUp()) {
+                    BlipUtils.setMargins(topBar, 0, getStatusBarHeight(), 0, 0);
+                    photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, getNavigationBarHeight());
+                } else {
+                    photo.setPadding(0, topBar.getHeight(), 0, 0);
+                }
+                Picasso.with(ImageActivity.this).load(comic.getImg()).into(photo);
+                PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(photo);
+                photoViewAttacher.setOnPhotoTapListener(ImageActivity.this);
+                topBar.setTranslationY(-(topBar.getHeight() + getStatusBarHeight()));
+                topBar.animate().translationY(0).setDuration(500).setInterpolator(new DecelerateInterpolator()).start();
+            }
+        });
     }
 
     private int getNavigationBarHeight() {
@@ -85,4 +114,20 @@ public class ImageActivity extends AppCompatActivity {
         return result;
     }
 
+    @Override
+    public void onBackPressed() {
+        topBar.animate().translationY(-(topBar.getHeight() + getStatusBarHeight()))
+                .setDuration(500).setInterpolator(new AccelerateInterpolator()).start();
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onPhotoTap(View view, float v, float v1) {
+        onBackPressed();
+    }
+
+    @Override
+    public void onClick(View v) {
+        onBackPressed();
+    }
 }
