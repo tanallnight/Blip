@@ -46,7 +46,7 @@ public class ImageActivity extends AppCompatActivity implements PhotoViewAttache
     ImageView photo;
     private DatabaseManager databaseManager;
     private View topBar, close;
-    private TextView title;
+    private TextView title, number;
 
     public static void launch(AppCompatActivity compatActivity, View transistionView, int num) {
         ActivityOptionsCompat options =
@@ -72,7 +72,9 @@ public class ImageActivity extends AppCompatActivity implements PhotoViewAttache
         topBar = findViewById(R.id.topBar);
         close = findViewById(R.id.close);
         title = (TextView) findViewById(R.id.title);
+        number = (TextView) findViewById(R.id.number);
 
+        number.setText(String.valueOf(num));
         close.setOnClickListener(this);
         title.setText(comic.getTitle());
         photo = (ImageView) findViewById(R.id.img);
