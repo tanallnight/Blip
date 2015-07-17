@@ -20,7 +20,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.tanmay.blip.BlipApplication;
@@ -132,18 +134,24 @@ public class XKCDDownloader extends IntentService {
                                 Response newResp = BlipApplication.getInstance().client.newCall(newReq).execute();
                                 if (!response.isSuccessful()) throw new IOException();
                                 String resp = newResp.body().string();
-                                Comic comic1 = gson.fromJson(resp, Comic.class);
-                                databaseManager.addComic(comic1);
-
-                                double progress = ((double) databaseManager.getCount() / num) * 100;
-                                Intent intent = new Intent(DOWNLOAD_PROGRESS);
-                                intent.putExtra(PROGRESS, progress);
-                                intent.putExtra(TITLE, comic1.getTitle());
-                                LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(intent);
+                                Comic comic1 = null;
+                                try {
+                                    comic1 = gson.fromJson(resp, Comic.class);
+                                } catch (JsonSyntaxException e) {
+                                    Crashlytics.log(1, "XKCDDownloader", e.getMessage() + " POS:" + index);
+                                }
+                                if (comic1 != null) {
+                                    databaseManager.addComic(comic1);
+                                    double progress = ((double) databaseManager.getCount() / num) * 100;
+                                    Intent intent = new Intent(DOWNLOAD_PROGRESS);
+                                    intent.putExtra(PROGRESS, progress);
+                                    intent.putExtra(TITLE, comic1.getTitle());
+                                    LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(intent);
+                                }
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
-                            // FIXME Currently if a specific request fails we are not propagating this anywhere
+                            LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
                         } finally {
                             latch.countDown();
                         }
