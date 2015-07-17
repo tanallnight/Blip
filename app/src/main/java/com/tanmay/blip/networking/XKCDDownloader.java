@@ -28,6 +28,9 @@ import com.tanmay.blip.database.DatabaseManager;
 import com.tanmay.blip.models.Comic;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class XKCDDownloader extends IntentService {
 
@@ -104,35 +107,56 @@ public class XKCDDownloader extends IntentService {
     }
 
     private void downloadAll() {
-        Gson gson = new Gson();
-        DatabaseManager databaseManager = new DatabaseManager(this);
+        final Gson gson = new Gson();
+        final DatabaseManager databaseManager = new DatabaseManager(this);
         Request request = new Request.Builder().url(LATEST_URL).build();
         try {
-            Response response = BlipApplication.getInstance().client.newCall(request).execute();
+            final Response response = BlipApplication.getInstance().client.newCall(request).execute();
             if (!response.isSuccessful()) throw new IOException();
             Comic comic = gson.fromJson(response.body().string(), Comic.class);
-            int num = comic.getNum();
+
+            final int num = comic.getNum();
+            final CountDownLatch latch = new CountDownLatch(num);
+            final Executor executor = Executors.newFixedThreadPool(10);
+
             for (int i = 1; i <= num; i++) {
-                if (i != 404) {
-                    String url = String.format(COMICS_URL, i);
-                    Request newReq = new Request.Builder().url(url).build();
-                    Response newResp = BlipApplication.getInstance().client.newCall(newReq).execute();
-                    if (!response.isSuccessful()) throw new IOException();
-                    String resp = newResp.body().string();
-                    Comic comic1 = gson.fromJson(resp, Comic.class);
-                    databaseManager.addComic(comic1);
-                    double progress = ((double) i / num) * 100;
-                    Intent intent = new Intent(DOWNLOAD_PROGRESS);
-                    intent.putExtra(PROGRESS, progress);
-                    intent.putExtra(TITLE, comic1.getTitle());
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                final int index = i;
+                executor.execute(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            if (index != 404) {
+                                String url = String.format(COMICS_URL, index);
+                                Request newReq = new Request.Builder().url(url).build();
+                                Response newResp = BlipApplication.getInstance().client.newCall(newReq).execute();
+                                if (!response.isSuccessful()) throw new IOException();
+                                String resp = newResp.body().string();
+                                Comic comic1 = gson.fromJson(resp, Comic.class);
+                                databaseManager.addComic(comic1);
+
+                                double progress = ((double) databaseManager.getCount() / num) * 100;
+                                Intent intent = new Intent(DOWNLOAD_PROGRESS);
+                                intent.putExtra(PROGRESS, progress);
+                                intent.putExtra(TITLE, comic1.getTitle());
+                                LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(intent);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            // FIXME Currently if a specific request fails we are not propagating this anywhere
+                        } finally {
+                            latch.countDown();
+                        }
                     }
-                }
+                });
             }
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new IOException(e);
+            }
+
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
         } catch (IOException e) {
             e.printStackTrace();
