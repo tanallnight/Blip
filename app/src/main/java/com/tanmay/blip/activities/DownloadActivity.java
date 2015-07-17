@@ -91,6 +91,19 @@ public class DownloadActivity extends AppCompatActivity implements View.OnClickL
         caption.setText(getResources().getString(R.string.action_download_all_comics_explain_caption));
         button.setOnClickListener(this);
 
+        if (savedInstanceState != null) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(XKCDDownloader.DOWNLOAD_PROGRESS);
+            intentFilter.addAction(XKCDDownloader.DOWNLOAD_SUCCESS);
+            intentFilter.addAction(XKCDDownloader.DOWNLOAD_FAIL);
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+
+            pageTitle.setText(getResources().getString(R.string.action_download_all_comics));
+            caption.setText(getResources().getString(R.string.action_download_all_comics_caption));
+            button.setVisibility(View.GONE);
+            downloadUI.setVisibility(View.VISIBLE);
+            progressBar.setIndeterminate(true);
+        }
     }
 
     @Override

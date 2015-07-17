@@ -46,4 +46,20 @@ public class SharedPrefs {
         sharedPreferences.edit().putBoolean("FIRST_RUN", firstRun).apply();
     }
 
+    public void setLastRedownladTime(long time) {
+        sharedPreferences.edit().putLong("REDOWNLOAD_TIME", time).apply();
+    }
+
+    public long getLastRedownloadTime() {
+        return sharedPreferences.getLong("REDOWNLOAD_TIME", 0);
+    }
+
+    public long getLastTranscriptCheckTime() {
+        return sharedPreferences.getLong("TRANSCRIPT_TIME", 0);
+    }
+
+    public void setLastTranscriptCheckTime(long time) {
+        sharedPreferences.edit().putLong("TRANSCRIPT_TIME", time).apply();
+    }
+
 }

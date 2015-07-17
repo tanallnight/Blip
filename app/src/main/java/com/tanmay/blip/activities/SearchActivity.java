@@ -139,7 +139,7 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
         public void onBindViewHolder(ViewHolder holder, int position) {
             Comic comic = comics.get(position);
 
-            holder.title.setText(comic.getTitle());
+            holder.title.setText(comic.getNum() + ". " + comic.getTitle());
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.YEAR, Integer.parseInt(comic.getYear()));

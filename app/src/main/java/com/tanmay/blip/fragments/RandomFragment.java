@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,11 +51,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class RandomFragment extends Fragment implements View.OnClickListener {
+public class RandomFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private TextView title, date, alt;
     private ImageView img, favourite;
     private View browser, transcript, imgContainer, share, explain;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private DatabaseManager databaseManager;
     private SimpleDateFormat simpleDateFormat;
     private Comic comic;
@@ -66,6 +68,7 @@ public class RandomFragment extends Fragment implements View.OnClickListener {
 
         setHasOptionsMenu(true);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
         title = (TextView) rootView.findViewById(R.id.title);
         date = (TextView) rootView.findViewById(R.id.date);
         alt = (TextView) rootView.findViewById(R.id.alt);
@@ -96,6 +99,9 @@ public class RandomFragment extends Fragment implements View.OnClickListener {
             num = savedInstanceState.getInt("NUM");
         loadComic(num);
 
+        swipeRefreshLayout.setColorSchemeResources(R.color.accent);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
         return rootView;
     }
 
@@ -108,7 +114,7 @@ public class RandomFragment extends Fragment implements View.OnClickListener {
         }
         comic = databaseManager.getComic(random);
 
-        title.setText(comic.getTitle());
+        title.setText(comic.getNum() + ". " + comic.getTitle());
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, Integer.parseInt(comic.getYear()));
         calendar.set(Calendar.MONTH, Integer.parseInt(comic.getMonth()) - 1);
@@ -125,6 +131,7 @@ public class RandomFragment extends Fragment implements View.OnClickListener {
         } else {
             favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -228,4 +235,8 @@ public class RandomFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onRefresh() {
+        loadComic(0);
+    }
 }
