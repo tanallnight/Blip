@@ -114,7 +114,7 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         }
         comic = databaseManager.getComic(random);
 
-        title.setText(comic.getTitle());
+        title.setText(comic.getNum() + ". " + comic.getTitle());
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, Integer.parseInt(comic.getYear()));
         calendar.set(Calendar.MONTH, Integer.parseInt(comic.getMonth()) - 1);
