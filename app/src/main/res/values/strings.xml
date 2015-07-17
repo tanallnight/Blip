@@ -16,7 +16,7 @@
 
 <resources>
     <string name="app_name">Blip</string>
-    <string name="version" translatable="false">1.0.2</string>
+    <string name="version" translatable="false">1.0.3</string>
     <string name="action_download_all_comics">Downloading Comics</string>
     <string name="action_download_all_comics_caption">About 2MB to Download</string>
     <string name="action_download_all_comics_explain">Comics need to be Downloaded</string>

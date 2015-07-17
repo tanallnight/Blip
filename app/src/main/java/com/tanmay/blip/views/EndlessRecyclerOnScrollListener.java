@@ -16,8 +16,8 @@
 
 package com.tanmay.blip.views;
 
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 
 /**
  * Created By ssins
@@ -32,10 +32,10 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
     private int visibleThreshold = 4; // The minimum amount of items to have below your current scroll position before loading more.
     private int current_page = 1;
 
-    private LinearLayoutManager mLinearLayoutManager;
+    private StaggeredGridLayoutManager mGridLayoutManager;
 
-    public EndlessRecyclerOnScrollListener(LinearLayoutManager linearLayoutManager) {
-        this.mLinearLayoutManager = linearLayoutManager;
+    public EndlessRecyclerOnScrollListener(StaggeredGridLayoutManager gridLayoutManager) {
+        this.mGridLayoutManager = gridLayoutManager;
     }
 
     @Override
@@ -43,8 +43,10 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
         super.onScrolled(recyclerView, dx, dy);
 
         visibleItemCount = recyclerView.getChildCount();
-        totalItemCount = mLinearLayoutManager.getItemCount();
-        firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
+        totalItemCount = mGridLayoutManager.getItemCount();
+        int[] items = new int[3];
+        mGridLayoutManager.findFirstVisibleItemPositions(items);
+        firstVisibleItem = items[0];
 
         if (loading) {
             if (totalItemCount > previousTotal) {
