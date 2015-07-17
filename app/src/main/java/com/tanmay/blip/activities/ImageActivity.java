@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -45,6 +44,7 @@ public class ImageActivity extends AppCompatActivity implements PhotoViewAttache
     public static final String EXTRA_IMAGE = "comic";
     ImageView photo;
     private DatabaseManager databaseManager;
+    private PhotoViewAttacher photoViewAttacher;
     private View topBar, close;
     private TextView title, number;
 
@@ -78,24 +78,34 @@ public class ImageActivity extends AppCompatActivity implements PhotoViewAttache
         close.setOnClickListener(this);
         title.setText(comic.getTitle());
         photo = (ImageView) findViewById(R.id.img);
-        ViewCompat.setTransitionName(photo, EXTRA_IMAGE);
         topBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 topBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 if (BlipUtils.isLollopopUp()) {
                     BlipUtils.setMargins(topBar, 0, getStatusBarHeight(), 0, 0);
-                    photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, getNavigationBarHeight());
+                    if (getResources().getBoolean(R.bool.landscape)) {
+                        photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, 0);
+                    } else {
+                        photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, getNavigationBarHeight());
+                    }
                 } else {
                     photo.setPadding(0, topBar.getHeight(), 0, 0);
                 }
                 Picasso.with(ImageActivity.this).load(comic.getImg()).into(photo);
-                PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(photo);
+                photoViewAttacher = new PhotoViewAttacher(photo);
                 photoViewAttacher.setOnPhotoTapListener(ImageActivity.this);
+                photoViewAttacher.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 topBar.setTranslationY(-(topBar.getHeight() + getStatusBarHeight()));
                 topBar.animate().translationY(0).setDuration(500).setInterpolator(new DecelerateInterpolator()).start();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        photoViewAttacher.cleanup();
     }
 
     private int getNavigationBarHeight() {
