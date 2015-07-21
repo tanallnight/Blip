@@ -70,4 +70,12 @@ public class SharedPrefs {
         return sharedPreferences.getBoolean("HIDE_TITLE", false);
     }
 
+    public void searchThroughTranscript(boolean search) {
+        sharedPreferences.edit().putBoolean("SEARCH_TRANSCRIPT", search).apply();
+    }
+
+    public boolean transcriptSearchEnabled() {
+        return sharedPreferences.getBoolean("SEARCH_TRANSCRIPT", true);
+    }
+
 }

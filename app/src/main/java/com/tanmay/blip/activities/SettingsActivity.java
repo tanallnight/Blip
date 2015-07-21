@@ -30,8 +30,9 @@ import com.tanmay.blip.database.SharedPrefs;
 public class SettingsActivity extends BaseActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
 
-    private View hideTitleGroup;
-    private AppCompatCheckBox hideTitle;
+    private View hideTitleGroup, searchTranscriptGroup;
+    private AppCompatCheckBox hideTitle, searchTranscript;
+    private SharedPrefs sharedPrefs;
 
     @Override
     protected int getLayoutResource() {
@@ -47,13 +48,20 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        hideTitleGroup = findViewById(R.id.hide_title_group);
-        hideTitle = (AppCompatCheckBox) findViewById(R.id.hide_title);
+        sharedPrefs = SharedPrefs.getInstance();
 
-        hideTitle.setChecked(SharedPrefs.getInstance().isTitleHidden());
+        hideTitleGroup = findViewById(R.id.hide_title_group);
+        searchTranscriptGroup = findViewById(R.id.search_transcript_group);
+        hideTitle = (AppCompatCheckBox) findViewById(R.id.hide_title);
+        searchTranscript = (AppCompatCheckBox) findViewById(R.id.search_transcript);
+
+        hideTitle.setChecked(sharedPrefs.isTitleHidden());
+        searchTranscript.setChecked(sharedPrefs.transcriptSearchEnabled());
 
         hideTitleGroup.setOnClickListener(this);
+        searchTranscriptGroup.setOnClickListener(this);
         hideTitle.setOnCheckedChangeListener(this);
+        searchTranscript.setOnCheckedChangeListener(this);
 
     }
 
@@ -61,14 +69,25 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.hide_title_group:
-                SharedPrefs.getInstance().setHideTitle(!hideTitle.isChecked());
+                sharedPrefs.setHideTitle(!hideTitle.isChecked());
                 hideTitle.setChecked(!hideTitle.isChecked());
+                break;
+            case R.id.search_transcript_group:
+                sharedPrefs.searchThroughTranscript(!searchTranscript.isChecked());
+                searchTranscript.setChecked(!searchTranscript.isChecked());
                 break;
         }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        SharedPrefs.getInstance().setHideTitle(isChecked);
+        switch (buttonView.getId()) {
+            case R.id.hide_title:
+                sharedPrefs.setHideTitle(isChecked);
+                break;
+            case R.id.search_transcript:
+                sharedPrefs.searchThroughTranscript(isChecked);
+                break;
+        }
     }
 }

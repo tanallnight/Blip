@@ -39,6 +39,7 @@ import com.squareup.picasso.Picasso;
 import com.tanmay.blip.BlipApplication;
 import com.tanmay.blip.R;
 import com.tanmay.blip.database.DatabaseManager;
+import com.tanmay.blip.database.SharedPrefs;
 import com.tanmay.blip.models.Comic;
 import com.tanmay.blip.utils.BlipUtils;
 import com.tanmay.blip.utils.SpeechSynthesizer;
@@ -79,6 +80,12 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
         searchBar = (EditText) findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(this);
 
+        if (SharedPrefs.getInstance().transcriptSearchEnabled()) {
+            searchBar.setHint(R.string.hint_search_transcript);
+        } else {
+            searchBar.setHint(R.string.hint_search);
+        }
+
         home = findViewById(R.id.home);
         clear = findViewById(R.id.clear);
         clear.setOnClickListener(this);
@@ -89,7 +96,7 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (!s.toString().equals("")) {
-            adapter.updateList(databaseManager.search(s.toString()));
+            adapter.updateList(databaseManager.search(s.toString(), SharedPrefs.getInstance().transcriptSearchEnabled()));
         } else {
             adapter.updateList(Collections.<Comic>emptyList());
         }

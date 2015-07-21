@@ -206,14 +206,24 @@ public class DatabaseManager extends SQLiteOpenHelper {
         return nums;
     }
 
-    public List<Comic> search(String keyWord) {
+    public List<Comic> search(String keyWord, boolean includeTranscript) {
         List<Comic> comics = Collections.emptyList();
         int num = 0;
         if (BlipUtils.isNumeric(keyWord)) {
             num = Integer.parseInt(keyWord);
         }
-        Cursor cursor = getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_XKCD + " WHERE " + TITLE +
-                " LIKE '%" + keyWord + "%' OR " + NUM + " = " + num, null);
+
+        String query;
+        if (!includeTranscript) {
+            query = "SELECT * FROM " + TABLE_XKCD + " WHERE " + TITLE +
+                    " LIKE '%" + keyWord + "%' OR " + NUM + " = " + num;
+        } else {
+            query = "SELECT * FROM " + TABLE_XKCD + " WHERE " + TITLE +
+                    " LIKE '%" + keyWord + "%' OR " + NUM + " = " + num +
+                    " OR " + TRANSCRIPT + " LIKE '%" + keyWord + "%'";
+        }
+
+        Cursor cursor = getReadableDatabase().rawQuery(query, null);
         if (cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()) {
             comics = new ArrayList<>();
             do {
