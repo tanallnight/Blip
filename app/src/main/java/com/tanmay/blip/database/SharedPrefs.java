@@ -62,4 +62,12 @@ public class SharedPrefs {
         sharedPreferences.edit().putLong("TRANSCRIPT_TIME", time).apply();
     }
 
+    public void setHideTitle(boolean isHidden) {
+        sharedPreferences.edit().putBoolean("HIDE_TITLE", isHidden).apply();
+    }
+
+    public boolean isTitleHidden() {
+        return sharedPreferences.getBoolean("HIDE_TITLE", false);
+    }
+
 }

@@ -52,6 +52,11 @@
             android:label="@string/title_menu_about"
             android:parentActivityName=".activities.MainActivity" />
 
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_menu_settings"
+            android:parentActivityName=".activities.MainActivity" />
+
         <service
             android:name=".networking.XKCDDownloader"
             android:exported="false" />

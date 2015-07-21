@@ -42,7 +42,9 @@ import com.tanmay.blip.R;
 import com.tanmay.blip.activities.AboutActivity;
 import com.tanmay.blip.activities.ImageActivity;
 import com.tanmay.blip.activities.SearchActivity;
+import com.tanmay.blip.activities.SettingsActivity;
 import com.tanmay.blip.database.DatabaseManager;
+import com.tanmay.blip.database.SharedPrefs;
 import com.tanmay.blip.models.Comic;
 import com.tanmay.blip.utils.BlipUtils;
 import com.tanmay.blip.utils.SpeechSynthesizer;
@@ -114,7 +116,14 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         }
         comic = databaseManager.getComic(random);
 
-        title.setText(comic.getNum() + ". " + comic.getTitle());
+        String comicTitle;
+        if (SharedPrefs.getInstance().isTitleHidden()) {
+            comicTitle = String.valueOf(comic.getNum());
+        } else {
+            comicTitle = comic.getNum() + ". " + comic.getTitle();
+        }
+        title.setText(comicTitle);
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, Integer.parseInt(comic.getYear()));
         calendar.set(Calendar.MONTH, Integer.parseInt(comic.getMonth()) - 1);
@@ -148,14 +157,19 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.random) {
-            loadComic(0);
-            return true;
-        } else if (item.getItemId() == R.id.search) {
-            startActivity(new Intent(getActivity(), SearchActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.about) {
-            startActivity(new Intent(getActivity(), AboutActivity.class));
+        switch (item.getItemId()) {
+            case R.id.random:
+                loadComic(0);
+                return true;
+            case R.id.search:
+                startActivity(new Intent(getActivity(), SearchActivity.class));
+                return true;
+            case R.id.about:
+                startActivity(new Intent(getActivity(), AboutActivity.class));
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

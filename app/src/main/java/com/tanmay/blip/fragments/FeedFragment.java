@@ -44,7 +44,9 @@ import com.tanmay.blip.R;
 import com.tanmay.blip.activities.AboutActivity;
 import com.tanmay.blip.activities.ImageActivity;
 import com.tanmay.blip.activities.SearchActivity;
+import com.tanmay.blip.activities.SettingsActivity;
 import com.tanmay.blip.database.DatabaseManager;
+import com.tanmay.blip.database.SharedPrefs;
 import com.tanmay.blip.models.Comic;
 import com.tanmay.blip.utils.BlipUtils;
 import com.tanmay.blip.utils.SpeechSynthesizer;
@@ -100,6 +102,8 @@ public class FeedFragment extends Fragment {
             adapter = new FeedListAdapter();
             adapter.addComics(databaseManager.getFeed());
             recyclerView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -111,12 +115,16 @@ public class FeedFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.search) {
-            startActivity(new Intent(getActivity(), SearchActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.about) {
-            startActivity(new Intent(getActivity(), AboutActivity.class));
-            return true;
+        switch (item.getItemId()) {
+            case R.id.search:
+                startActivity(new Intent(getActivity(), SearchActivity.class));
+                return true;
+            case R.id.about:
+                startActivity(new Intent(getActivity(), AboutActivity.class));
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -155,7 +163,13 @@ public class FeedFragment extends Fragment {
         public void onBindViewHolder(ViewHolder holder, int position) {
             Comic comic = comics.get(position);
 
-            holder.title.setText(comic.getNum() + ". " + comic.getTitle());
+            String title;
+            if (SharedPrefs.getInstance().isTitleHidden()) {
+                title = String.valueOf(comic.getNum());
+            } else {
+                title = comic.getNum() + ". " + comic.getTitle();
+            }
+            holder.title.setText(title);
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.YEAR, Integer.parseInt(comic.getYear()));
