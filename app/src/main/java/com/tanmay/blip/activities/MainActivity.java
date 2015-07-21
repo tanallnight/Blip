@@ -33,6 +33,7 @@ import com.tanmay.blip.database.SharedPrefs;
 import com.tanmay.blip.fragments.FavouritesFragment;
 import com.tanmay.blip.fragments.FeedFragment;
 import com.tanmay.blip.fragments.RandomFragment;
+import com.tanmay.blip.networking.UpdateCheckService;
 import com.tanmay.blip.networking.XKCDDownloader;
 
 public class MainActivity extends BaseActivity {
@@ -90,6 +91,10 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this, XKCDDownloader.class);
             intent.setAction(XKCDDownloader.DOWNLOAD_TODAY);
             startService(intent);
+        }
+
+        if (!SharedPrefs.getInstance().getFirstRun()) {
+            startService(new Intent(this, UpdateCheckService.class));
         }
     }
 

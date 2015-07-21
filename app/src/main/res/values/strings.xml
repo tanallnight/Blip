@@ -40,4 +40,5 @@
     <string name="setting_hide_title_subhead">Titles will be hidden from the cards, they will only be visible in enlarged view</string>
     <string name="setting_search_transcript">Search through Transcripts</string>
     <string name="setting_search_transcript_subhead">Extends the search filters to include transcripts too</string>
+    <string name="title_notification_new_comic">New xkcd Comic Posted!</string>
 </resources>
