@@ -45,7 +45,7 @@ public class DownloadActivity extends AppCompatActivity implements View.OnClickL
                         progressBar.setIndeterminate(false);
                     }
                     progressBar.setProgress((int) intent.getExtras().getDouble(XKCDDownloader.PROGRESS));
-                    progress.setText(String.valueOf(intent.getExtras().getDouble(XKCDDownloader.PROGRESS)) + "%");
+                    progress.setText((int) (intent.getExtras().getDouble(XKCDDownloader.PROGRESS)) + "%");
                     title.setText(intent.getExtras().getString(XKCDDownloader.TITLE));
                     break;
                 case XKCDDownloader.DOWNLOAD_FAIL:
@@ -78,6 +78,7 @@ public class DownloadActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
+
         progress = (TextView) findViewById(R.id.progress);
         title = (TextView) findViewById(R.id.titles);
         pageTitle = (TextView) findViewById(R.id.title);
