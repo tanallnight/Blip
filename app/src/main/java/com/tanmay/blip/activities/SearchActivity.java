@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -57,6 +58,7 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
     private RecyclerView recyclerView;
     private EditText searchBar;
     private View home, clear;
+    private View searchContainer, parent;
     private SearchListAdapter adapter;
 
     @Override
@@ -80,6 +82,9 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
         searchBar = (EditText) findViewById(R.id.search_bar);
         searchBar.addTextChangedListener(this);
 
+        searchContainer = findViewById(R.id.search_container);
+        parent = findViewById(R.id.parent);
+
         if (SharedPrefs.getInstance().transcriptSearchEnabled()) {
             searchBar.setHint(R.string.hint_search_transcript);
         } else {
@@ -90,6 +95,14 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
         clear = findViewById(R.id.clear);
         clear.setOnClickListener(this);
         home.setOnClickListener(this);
+
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            searchContainer.setBackgroundColor(getResources().getColor(R.color.primary_night));
+            parent.setBackgroundColor(getResources().getColor(R.color.primary_light_night));
+            if (BlipUtils.isLollopopUp()) {
+                getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark_night));
+            }
+        }
 
     }
 
@@ -152,6 +165,17 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
         public void onBindViewHolder(ViewHolder holder, int position) {
             Comic comic = comics.get(position);
 
+            if (SharedPrefs.getInstance().isNightModeEnabled()) {
+                holder.backgroundCard.setCardBackgroundColor(getResources().getColor(R.color.primary_night));
+                holder.title.setTextColor(getResources().getColor(android.R.color.white));
+                holder.date.setTextColor(getResources().getColor(android.R.color.white));
+                holder.alt.setTextColor(getResources().getColor(android.R.color.white));
+                holder.transcript.setColorFilter(getResources().getColor(android.R.color.white));
+                holder.share.setColorFilter(getResources().getColor(android.R.color.white));
+                holder.explain.setColorFilter(getResources().getColor(android.R.color.white));
+                holder.browser.setColorFilter(getResources().getColor(android.R.color.white));
+            }
+
             holder.title.setText(comic.getNum() + ". " + comic.getTitle());
 
             Calendar calendar = Calendar.getInstance();
@@ -170,7 +194,11 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
             if (comic.isFavourite()) {
                 holder.favourite.setColorFilter(getResources().getColor(R.color.accent));
             } else {
-                holder.favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+                if (SharedPrefs.getInstance().isNightModeEnabled()) {
+                    holder.favourite.setColorFilter(getResources().getColor(android.R.color.white));
+                } else {
+                    holder.favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+                }
             }
         }
 
@@ -182,8 +210,9 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             TextView title, date, alt;
-            ImageView img, favourite;
-            View browser, transcript, imgContainer, share, explain;
+            ImageView img, favourite, transcript, share, explain, browser;
+            View imgContainer;
+            CardView backgroundCard;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -192,11 +221,12 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
                 alt = (TextView) itemView.findViewById(R.id.alt);
                 img = (ImageView) itemView.findViewById(R.id.img);
                 favourite = (ImageView) itemView.findViewById(R.id.favourite);
-                browser = itemView.findViewById(R.id.open_in_browser);
-                transcript = itemView.findViewById(R.id.transcript);
+                browser = (ImageView) itemView.findViewById(R.id.open_in_browser);
+                transcript = (ImageView) itemView.findViewById(R.id.transcript);
                 imgContainer = itemView.findViewById(R.id.img_container);
-                share = itemView.findViewById(R.id.share);
-                explain = itemView.findViewById(R.id.help);
+                share = (ImageView) itemView.findViewById(R.id.share);
+                explain = (ImageView) itemView.findViewById(R.id.help);
+                backgroundCard = (CardView) itemView;
 
                 browser.setOnClickListener(this);
                 transcript.setOnClickListener(this);
@@ -255,8 +285,11 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
                         comics.get(position).setFavourite(!fav);
                         databaseManager.setFavourite(comics.get(position).getNum(), !fav);
                         if (fav) {
-                            //remove from fav
-                            favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+                            if (SharedPrefs.getInstance().isNightModeEnabled()) {
+                                favourite.setColorFilter(getResources().getColor(android.R.color.white));
+                            } else {
+                                favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+                            }
                         } else {
                             //make fav
                             favourite.setColorFilter(getResources().getColor(R.color.accent));

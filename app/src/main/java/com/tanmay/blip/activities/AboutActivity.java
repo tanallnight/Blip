@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.tanmay.blip.R;
+import com.tanmay.blip.database.SharedPrefs;
 
 import de.psdev.licensesdialog.LicensesDialog;
 
@@ -38,12 +39,26 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
+    protected int getToolbarColor() {
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            return getResources().getColor(R.color.primary_night);
+        } else {
+            return getResources().getColor(R.color.primary);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         (findViewById(R.id.git)).setOnClickListener(this);
         (findViewById(R.id.licenses)).setOnClickListener(this);
         (findViewById(R.id.developer)).setOnClickListener(this);
+
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            (findViewById(R.id.parent)).setBackgroundColor(getResources().getColor(R.color.primary_night));
+            setStatusBarColor(R.color.primary_dark_night);
+        }
     }
 
     @Override

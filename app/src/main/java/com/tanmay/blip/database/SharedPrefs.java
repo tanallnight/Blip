@@ -78,4 +78,12 @@ public class SharedPrefs {
         return sharedPreferences.getBoolean("SEARCH_TRANSCRIPT", true);
     }
 
+    public void nightModeEnabled(boolean enabled) {
+        sharedPreferences.edit().putBoolean("NIGHT_MODE", enabled).apply();
+    }
+
+    public boolean isNightModeEnabled() {
+        return sharedPreferences.getBoolean("NIGHT_MODE", false);
+    }
+
 }

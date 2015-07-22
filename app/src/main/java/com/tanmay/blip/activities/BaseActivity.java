@@ -17,10 +17,12 @@
 package com.tanmay.blip.activities;
 
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.tanmay.blip.R;
+import com.tanmay.blip.utils.BlipUtils;
 
 public abstract class BaseActivity extends AppCompatActivity{
 
@@ -33,12 +35,21 @@ public abstract class BaseActivity extends AppCompatActivity{
         setContentView(getLayoutResource());
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if(mToolbar != null){
+            mToolbar.setBackgroundColor(getToolbarColor());
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(getDisplayHomeAsUpEnabled());
         } else {
             throw new NullPointerException("Layout must contain a toolbar with id 'toolbar'");
         }
     }
+
+    protected void setStatusBarColor(@ColorRes int color) {
+        if (BlipUtils.isLollopopUp()) {
+            getWindow().setStatusBarColor(getResources().getColor(color));
+        }
+    }
+
+    protected abstract int getToolbarColor();
 
     protected abstract int getLayoutResource();
 

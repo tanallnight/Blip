@@ -59,8 +59,23 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected int getToolbarColor() {
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            return getResources().getColor(R.color.primary_night);
+        } else {
+            return getResources().getColor(R.color.primary);
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            setStatusBarColor(R.color.primary_dark_night);
+        } else {
+            setStatusBarColor(R.color.primary_dark);
+        }
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -104,6 +119,11 @@ public class MainActivity extends BaseActivity {
             viewPager.setAdapter(adapter);
         }
         tabLayout.setupWithViewPager(viewPager);
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            tabLayout.setBackgroundColor(getResources().getColor(R.color.primary_night));
+        } else {
+            tabLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+        }
     }
 
     @Override

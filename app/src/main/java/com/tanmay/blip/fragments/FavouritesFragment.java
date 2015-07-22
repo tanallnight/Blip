@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -59,7 +60,7 @@ import java.util.Locale;
 public class FavouritesFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private View noFavs;
+    private ImageView noFavs;
     private DatabaseManager databaseManager;
     private FavouritesListAdapter adapter;
 
@@ -67,6 +68,10 @@ public class FavouritesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favourite, container, false);
+
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            rootView.setBackgroundColor(getActivity().getResources().getColor(R.color.primary_light_night));
+        }
 
         setHasOptionsMenu(true);
 
@@ -79,7 +84,11 @@ public class FavouritesFragment extends Fragment {
         }
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        noFavs = rootView.findViewById(R.id.no_favs);
+        noFavs = (ImageView) rootView.findViewById(R.id.no_favs);
+
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            noFavs.setColorFilter(getResources().getColor(android.R.color.white));
+        }
 
         return rootView;
     }
@@ -160,6 +169,17 @@ public class FavouritesFragment extends Fragment {
         public void onBindViewHolder(ViewHolder holder, int position) {
             Comic comic = comics.get(position);
 
+            if (SharedPrefs.getInstance().isNightModeEnabled()) {
+                holder.backgroundCard.setCardBackgroundColor(getActivity().getResources().getColor(R.color.primary_night));
+                holder.title.setTextColor(getActivity().getResources().getColor(android.R.color.white));
+                holder.date.setTextColor(getActivity().getResources().getColor(android.R.color.white));
+                holder.alt.setTextColor(getActivity().getResources().getColor(android.R.color.white));
+                holder.transcript.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+                holder.share.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+                holder.explain.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+                holder.browser.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+            }
+
             String title;
             if (SharedPrefs.getInstance().isTitleHidden()) {
                 title = String.valueOf(comic.getNum());
@@ -184,7 +204,11 @@ public class FavouritesFragment extends Fragment {
             if (comic.isFavourite()) {
                 holder.favourite.setColorFilter(getResources().getColor(R.color.accent));
             } else {
-                holder.favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+                if (SharedPrefs.getInstance().isNightModeEnabled()) {
+                    holder.favourite.setColorFilter(getResources().getColor(android.R.color.white));
+                } else {
+                    holder.favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+                }
             }
         }
 
@@ -196,8 +220,9 @@ public class FavouritesFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             TextView title, date, alt;
-            ImageView img, favourite;
-            View browser, transcript, imgContainer, share, explain;
+            ImageView img, favourite, transcript, share, explain, browser;
+            View imgContainer;
+            CardView backgroundCard;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -206,11 +231,12 @@ public class FavouritesFragment extends Fragment {
                 alt = (TextView) itemView.findViewById(R.id.alt);
                 img = (ImageView) itemView.findViewById(R.id.img);
                 favourite = (ImageView) itemView.findViewById(R.id.favourite);
-                browser = itemView.findViewById(R.id.open_in_browser);
-                transcript = itemView.findViewById(R.id.transcript);
+                browser = (ImageView) itemView.findViewById(R.id.open_in_browser);
+                transcript = (ImageView) itemView.findViewById(R.id.transcript);
                 imgContainer = itemView.findViewById(R.id.img_container);
-                share = itemView.findViewById(R.id.share);
-                explain = itemView.findViewById(R.id.help);
+                share = (ImageView) itemView.findViewById(R.id.share);
+                explain = (ImageView) itemView.findViewById(R.id.help);
+                backgroundCard = (CardView) itemView;
 
                 browser.setOnClickListener(this);
                 transcript.setOnClickListener(this);

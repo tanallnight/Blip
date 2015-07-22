@@ -23,6 +23,9 @@
     <string name="action_download_all_comics_explain_caption">About 2MB of text data needs to be downloaded to make the app experience fluid and support the search functionality</string>
     <string name="button_start_download">Start Download</string>
     <string name="title_dialog_transcript">Transcript</string>
+    <string name="title_dialog_restart">Restart Required</string>
+    <string name="content_dialog_restart">App needs to be restarted for the changes to take effect</string>
+    <string name="positive_text_restart">Restart</string>
     <string name="negative_text_dialog">Close</string>
     <string name="neutral_text_dialog_speak">Speak</string>
     <string name="message_no_transcript">No transcript was found for this comic</string>
@@ -40,5 +43,7 @@
     <string name="setting_hide_title_subhead">Titles will be hidden from the cards, they will only be visible in enlarged view</string>
     <string name="setting_search_transcript">Search through Transcripts</string>
     <string name="setting_search_transcript_subhead">Extends the search filters to include transcripts too</string>
+    <string name="setting_night_mode">Enable Night Mode</string>
+    <string name="setting_night_mode_subhead">Turns text to white color on dark background</string>
     <string name="title_notification_new_comic">New xkcd Comic Posted!</string>
 </resources>

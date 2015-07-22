@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,16 +58,22 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
 
     private TextView title, date, alt;
     private ImageView img, favourite;
-    private View browser, transcript, imgContainer, share, explain;
+    private ImageView browser, transcript, share, explain;
+    private View imgContainer;
     private SwipeRefreshLayout swipeRefreshLayout;
     private DatabaseManager databaseManager;
     private SimpleDateFormat simpleDateFormat;
     private Comic comic;
+    private CardView backgroundCard;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_random, container, false);
+
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            rootView.setBackgroundColor(getActivity().getResources().getColor(R.color.primary_light_night));
+        }
 
         setHasOptionsMenu(true);
 
@@ -76,11 +83,12 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         alt = (TextView) rootView.findViewById(R.id.alt);
         img = (ImageView) rootView.findViewById(R.id.img);
         favourite = (ImageView) rootView.findViewById(R.id.favourite);
-        browser = rootView.findViewById(R.id.open_in_browser);
-        transcript = rootView.findViewById(R.id.transcript);
+        browser = (ImageView) rootView.findViewById(R.id.open_in_browser);
+        transcript = (ImageView) rootView.findViewById(R.id.transcript);
         imgContainer = rootView.findViewById(R.id.img_container);
-        share = rootView.findViewById(R.id.share);
-        explain = rootView.findViewById(R.id.help);
+        share = (ImageView) rootView.findViewById(R.id.share);
+        explain = (ImageView) rootView.findViewById(R.id.help);
+        backgroundCard = (CardView) rootView.findViewById(R.id.comic);
 
         browser.setOnClickListener(this);
         transcript.setOnClickListener(this);
@@ -88,6 +96,17 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         favourite.setOnClickListener(this);
         share.setOnClickListener(this);
         explain.setOnClickListener(this);
+
+        if (SharedPrefs.getInstance().isNightModeEnabled()) {
+            backgroundCard.setCardBackgroundColor(getActivity().getResources().getColor(R.color.primary_night));
+            title.setTextColor(getActivity().getResources().getColor(android.R.color.white));
+            date.setTextColor(getActivity().getResources().getColor(android.R.color.white));
+            alt.setTextColor(getActivity().getResources().getColor(android.R.color.white));
+            transcript.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+            share.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+            explain.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+            browser.setColorFilter(getActivity().getResources().getColor(android.R.color.white));
+        }
 
         databaseManager = new DatabaseManager(getActivity());
         simpleDateFormat = new SimpleDateFormat("MMMM dd, yyyy (EEEE)", Locale.getDefault());
@@ -138,7 +157,11 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         if (comic.isFavourite()) {
             favourite.setColorFilter(getResources().getColor(R.color.accent));
         } else {
-            favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+            if (SharedPrefs.getInstance().isNightModeEnabled()) {
+                favourite.setColorFilter(getResources().getColor(android.R.color.white));
+            } else {
+                favourite.setColorFilter(getResources().getColor(R.color.icons_dark));
+            }
         }
         swipeRefreshLayout.setRefreshing(false);
     }

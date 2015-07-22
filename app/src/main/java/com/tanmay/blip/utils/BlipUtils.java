@@ -16,12 +16,19 @@
 
 package com.tanmay.blip.utils;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Response;
+import com.tanmay.blip.R;
+import com.tanmay.blip.activities.MainActivity;
 
 import java.io.IOException;
 import java.util.Random;
@@ -64,4 +71,22 @@ public class BlipUtils {
         }
     }
 
+    public static void restartApp(final Context context) {
+        new MaterialDialog.Builder(context)
+                .title(R.string.title_dialog_restart)
+                .content(R.string.content_dialog_restart)
+                .positiveText(R.string.positive_text_restart)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        Intent intent = new Intent(context, MainActivity.class);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(context, 2351, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 500, pendingIntent);
+                        System.exit(0);
+                    }
+                })
+                .show();
+    }
 }

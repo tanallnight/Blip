@@ -24,4 +24,9 @@
     <color name="icons">#FFFFFF</color>
     <color name="icons_dark">#616161</color>
     <color name="divider">#E0E0E0</color>
+
+    <color name="primary_light_night">#1c1e20</color>
+    <color name="primary_night">#222222</color>
+    <color name="primary_dark_night">#1b1b1b</color>
+
 </resources>
