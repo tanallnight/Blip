@@ -32,11 +32,11 @@ import com.tanmay.blip.utils.BlipUtils;
 public class SettingsActivity extends BaseActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
 
-    private View hideTitleGroup, searchTranscriptGroup, nightModeGroup;
-    private AppCompatCheckBox hideTitle, searchTranscript, nightMode;
+    private View hideTitleGroup, searchTranscriptGroup, nightModeGroup, spoilerizeAltGroup;
+    private AppCompatCheckBox hideTitle, searchTranscript, nightMode, spoilerizeAlt;
     private SharedPrefs sharedPrefs;
-    private TextView hideTitleTitle, showTranscriptTitle, nightModeTitle;
-    private TextView hideTitleSubhead, showTranscriptSubhead, nightModeSubhead;
+    private TextView hideTitleTitle, showTranscriptTitle, nightModeTitle, spoilerizeAltTitle;
+    private TextView hideTitleSubhead, showTranscriptSubhead, nightModeSubhead, spoilerizeAltSubhead;
     private View parent;
 
     @Override
@@ -67,38 +67,47 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         hideTitleGroup = findViewById(R.id.hide_title_group);
         searchTranscriptGroup = findViewById(R.id.search_transcript_group);
         nightModeGroup = findViewById(R.id.night_mode_group);
+        spoilerizeAltGroup = findViewById(R.id.spoilerize_alt_group);
         hideTitle = (AppCompatCheckBox) findViewById(R.id.hide_title);
         searchTranscript = (AppCompatCheckBox) findViewById(R.id.search_transcript);
         nightMode = (AppCompatCheckBox) findViewById(R.id.night_mode);
+        spoilerizeAlt = (AppCompatCheckBox) findViewById(R.id.spoilerize_alt);
 
         hideTitleTitle = (TextView) findViewById(R.id.hide_title_title);
         showTranscriptTitle = (TextView) findViewById(R.id.search_transcript_title);
         nightModeTitle = (TextView) findViewById(R.id.night_mode_title);
+        spoilerizeAltTitle = (TextView) findViewById(R.id.spoilerize_alt_title);
         hideTitleSubhead = (TextView) findViewById(R.id.hide_title_subhead);
         showTranscriptSubhead = (TextView) findViewById(R.id.search_transcript_subhead);
         nightModeSubhead = (TextView) findViewById(R.id.night_mode_subhead);
+        spoilerizeAltSubhead = (TextView) findViewById(R.id.spoilerize_alt_subhead);
 
         parent = findViewById(R.id.parent);
 
         hideTitle.setChecked(sharedPrefs.isTitleHidden());
         searchTranscript.setChecked(sharedPrefs.transcriptSearchEnabled());
         nightMode.setChecked(sharedPrefs.isNightModeEnabled());
+        spoilerizeAlt.setChecked(sharedPrefs.isAltSpoilerized());
 
         hideTitleGroup.setOnClickListener(this);
         searchTranscriptGroup.setOnClickListener(this);
         nightModeGroup.setOnClickListener(this);
+        spoilerizeAltGroup.setOnClickListener(this);
         hideTitle.setOnCheckedChangeListener(this);
         searchTranscript.setOnCheckedChangeListener(this);
         nightMode.setOnCheckedChangeListener(this);
+        spoilerizeAlt.setOnCheckedChangeListener(this);
 
         if (sharedPrefs.isNightModeEnabled()) {
             parent.setBackgroundColor(getResources().getColor(R.color.primary_light_night));
             hideTitleTitle.setTextColor(getResources().getColor(android.R.color.white));
             showTranscriptTitle.setTextColor(getResources().getColor(android.R.color.white));
             nightModeTitle.setTextColor(getResources().getColor(android.R.color.white));
+            spoilerizeAltTitle.setTextColor(getResources().getColor(android.R.color.white));
             hideTitleSubhead.setTextColor(getResources().getColor(android.R.color.white));
             showTranscriptSubhead.setTextColor(getResources().getColor(android.R.color.white));
             nightModeSubhead.setTextColor(getResources().getColor(android.R.color.white));
+            spoilerizeAltSubhead.setTextColor(getResources().getColor(android.R.color.white));
             setStatusBarColor(R.color.primary_dark_night);
         }
 
@@ -120,6 +129,9 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 nightMode.setChecked(!nightMode.isChecked());
                 BlipUtils.restartApp(this);
                 break;
+            case R.id.spoilerize_alt_group:
+                sharedPrefs.spoilerizeAlt(!spoilerizeAlt.isChecked());
+                spoilerizeAlt.setChecked(!spoilerizeAlt.isChecked());
         }
     }
 
@@ -136,6 +148,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 sharedPrefs.nightModeEnabled(isChecked);
                 BlipUtils.restartApp(this);
                 break;
+            case R.id.spoilerize_alt:
+                sharedPrefs.spoilerizeAlt(isChecked);
         }
     }
 }

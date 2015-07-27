@@ -194,7 +194,14 @@ public class FavouritesFragment extends Fragment {
             calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(comic.getDay()));
             holder.date.setText(simpleDateFormat.format(calendar.getTime()));
 
-            holder.alt.setText(comic.getAlt());
+            if (SharedPrefs.getInstance().isAltSpoilerized()) {
+                String altText = getResources().getString(R.string.title_pager_alt_spoiler);
+                holder.alt.setClickable(true);
+                holder.alt.setText(altText);
+            } else {
+                holder.alt.setClickable(false);
+                holder.alt.setText(comic.getAlt());
+            }
 
             Picasso.with(holder.img.getContext())
                     .load(comic.getImg())
@@ -244,6 +251,7 @@ public class FavouritesFragment extends Fragment {
                 favourite.setOnClickListener(this);
                 share.setOnClickListener(this);
                 explain.setOnClickListener(this);
+                alt.setOnClickListener(this);
             }
 
             @Override
@@ -312,6 +320,10 @@ public class FavouritesFragment extends Fragment {
                         shareIntent.putExtra(Intent.EXTRA_SUBJECT, comics.get(position).getTitle());
                         shareIntent.putExtra(Intent.EXTRA_TEXT, comics.get(position).getImg());
                         startActivity(Intent.createChooser(shareIntent, getActivity().getResources().getString(R.string.tip_share_image_url)));
+                        break;
+                    case R.id.alt:
+                        alt.setText(comics.get(position).getAlt());
+                        alt.setClickable(false);
                         break;
                 }
             }

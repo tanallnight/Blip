@@ -96,6 +96,7 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         favourite.setOnClickListener(this);
         share.setOnClickListener(this);
         explain.setOnClickListener(this);
+        alt.setOnClickListener(this);
 
         if (SharedPrefs.getInstance().isNightModeEnabled()) {
             backgroundCard.setCardBackgroundColor(getActivity().getResources().getColor(R.color.primary_night));
@@ -148,7 +149,15 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         calendar.set(Calendar.MONTH, Integer.parseInt(comic.getMonth()) - 1);
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(comic.getDay()));
         date.setText(simpleDateFormat.format(calendar.getTime()));
-        alt.setText(comic.getAlt());
+
+        if (SharedPrefs.getInstance().isAltSpoilerized()) {
+            String altText = getResources().getString(R.string.title_pager_alt_spoiler);
+            alt.setClickable(true);
+            alt.setText(altText);
+        } else {
+            alt.setClickable(false);
+            alt.setText(comic.getAlt());
+        }
 
         Picasso.with(getActivity())
                 .load(comic.getImg())
@@ -268,6 +277,10 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, comic.getTitle());
                 shareIntent.putExtra(Intent.EXTRA_TEXT, comic.getImg());
                 startActivity(Intent.createChooser(shareIntent, getActivity().getResources().getString(R.string.tip_share_image_url)));
+                break;
+            case R.id.alt:
+                alt.setText(comic.getAlt());
+                alt.setClickable(false);
                 break;
         }
     }

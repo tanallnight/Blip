@@ -45,5 +45,8 @@
     <string name="setting_search_transcript_subhead">Extends the search filters to include transcripts too</string>
     <string name="setting_night_mode">Enable Night Mode</string>
     <string name="setting_night_mode_subhead">Turns text to white color on dark background</string>
+    <string name="setting_spoilerize_alt">Sopilerize alt text</string>
+    <string name="setting_spoilerize_alt_subhead">Hides the alt text at the bottom of the image to the right</string>
     <string name="title_notification_new_comic">New xkcd Comic Posted!</string>
+    <string name="title_pager_alt_spoiler">SPOILERS</string>
 </resources>

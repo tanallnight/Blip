@@ -86,4 +86,12 @@ public class SharedPrefs {
         return sharedPreferences.getBoolean("NIGHT_MODE", false);
     }
 
+    public void spoilerizeAlt(boolean enabled) {
+        sharedPreferences.edit().putBoolean("SPOILERIZE_ALT", enabled).apply();
+    }
+
+    public boolean isAltSpoilerized() {
+        return sharedPreferences.getBoolean("SPOILERIZE_ALT", false);
+    }
+
 }
