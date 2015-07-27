@@ -49,7 +49,8 @@ public class NotificationReceiver extends BroadcastReceiver {
                     .setSmallIcon(R.drawable.ic_notif)
                     .setContentTitle(context.getResources().getString(R.string.title_notification_new_comic))
                     .setContentText(comic.getTitle())
-                    .setContentIntent(clickIntent);
+                    .setContentIntent(clickIntent)
+                    .setAutoCancel(true);
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(NOTIF_ID, builder.build());
