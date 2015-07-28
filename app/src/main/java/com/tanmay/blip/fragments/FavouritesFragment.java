@@ -16,12 +16,16 @@
 
 package com.tanmay.blip.fragments;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -64,10 +68,21 @@ public class FavouritesFragment extends Fragment {
     private DatabaseManager databaseManager;
     private FavouritesListAdapter adapter;
 
+    public BroadcastReceiver eventReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (adapter != null) {
+                adapter.updateList();
+            }
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_favourite, container, false);
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(eventReceiver, new IntentFilter(RandomFragment.FAV_CLICKED));
 
         if (SharedPrefs.getInstance().isNightModeEnabled()) {
             rootView.setBackgroundColor(getActivity().getResources().getColor(R.color.primary_light_night));
@@ -155,6 +170,8 @@ public class FavouritesFragment extends Fragment {
                 recyclerView.setVisibility(View.GONE);
                 noFavs.setVisibility(View.VISIBLE);
             } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                noFavs.setVisibility(View.GONE);
                 notifyDataSetChanged();
             }
         }
