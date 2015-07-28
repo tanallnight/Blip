@@ -85,9 +85,13 @@ public class ImageActivity extends AppCompatActivity implements PhotoViewAttache
                 if (BlipUtils.isLollopopUp()) {
                     BlipUtils.setMargins(topBar, 0, getStatusBarHeight(), 0, 0);
                     if (getResources().getBoolean(R.bool.landscape)) {
-                        photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, 0);
+                        if (getResources().getBoolean(R.bool.tablet_land)) {
+                            photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, getNavigationBarHeight(false));
+                        } else {
+                            photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), getNavigationBarHeight(true), 0);
+                        }
                     } else {
-                        photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, getNavigationBarHeight());
+                        photo.setPadding(0, getStatusBarHeight() + topBar.getHeight(), 0, getNavigationBarHeight(false));
                     }
                 } else {
                     photo.setPadding(0, topBar.getHeight(), 0, 0);
@@ -108,8 +112,8 @@ public class ImageActivity extends AppCompatActivity implements PhotoViewAttache
         photoViewAttacher.cleanup();
     }
 
-    private int getNavigationBarHeight() {
-        int id = getResources().getIdentifier("navigation_bar_height",
+    private int getNavigationBarHeight(boolean landscape) {
+        int id = getResources().getIdentifier(landscape ? "navigation_bar_height_landscape" : "navigation_bar_height",
                 "dimen", "android");
         if (id > 0) {
             return getResources().getDimensionPixelSize(id);

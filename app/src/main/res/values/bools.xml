@@ -17,5 +17,6 @@
 <resources>
 
     <bool name="landscape">false</bool>
+  <bool name="tablet_land">false</bool>
 
 </resources>
