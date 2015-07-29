@@ -33,5 +33,9 @@ gradle.properties
 # Windows Thumbs DB Files
 Thumbs.db
 
-# Keystore
+# Keystore/Signing Info
 blip_keystore.jks
+release.properties
+
+# Keys
+Keys.java

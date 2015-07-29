@@ -45,4 +45,10 @@
         <copyright>Copyright 2013 Philip Schiffer</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
+    <notice>
+        <name>android-inapp-billing-v3</name>
+        <url>https://github.com/anjlab/android-inapp-billing-v3</url>
+        <copyright>Copyright 2014 AnjLab</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
 </notices>

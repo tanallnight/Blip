@@ -19,4 +19,5 @@
 -dontwarn okio.**
 -dontwarn com.squareup.okhttp.**
 -keep class com.squareup.okhttp.** { *; }
+-keep class android.support.design.widget.** { *; }
 -keep interface com.squareup.okhttp.** { *; }

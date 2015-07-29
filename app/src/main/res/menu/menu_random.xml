@@ -31,6 +31,10 @@
         android:title="@string/title_menu_settings"
         app:showAsAction="never" />
     <item
+        android:id="@+id/donate"
+        android:title="@string/title_menu_donate"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/about"
         android:title="@string/title_menu_about"
         app:showAsAction="never" />

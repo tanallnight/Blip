@@ -43,6 +43,7 @@ import com.squareup.picasso.Picasso;
 import com.tanmay.blip.BlipApplication;
 import com.tanmay.blip.R;
 import com.tanmay.blip.activities.AboutActivity;
+import com.tanmay.blip.activities.DonateActivity;
 import com.tanmay.blip.activities.ImageActivity;
 import com.tanmay.blip.activities.SearchActivity;
 import com.tanmay.blip.activities.SettingsActivity;
@@ -129,6 +130,9 @@ public class FeedFragment extends Fragment {
                 return true;
             case R.id.settings:
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            case R.id.donate:
+                startActivity(new Intent(getActivity(), DonateActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);
