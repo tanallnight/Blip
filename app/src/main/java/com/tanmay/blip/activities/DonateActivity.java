@@ -30,6 +30,8 @@ import com.anjlab.android.iab.v3.TransactionDetails;
 import com.tanmay.blip.Keys;
 import com.tanmay.blip.R;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class DonateActivity extends BaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener, BillingProcessor.IBillingHandler {
@@ -37,6 +39,8 @@ public class DonateActivity extends BaseActivity implements ViewPager.OnPageChan
     private ViewPager mPager;
     private TextView mDonateButton;
     private BillingProcessor mBillingProcessor;
+    private List<SkuDetails> mDonateSKUs;
+
     private int mCurrentPosition = 0;
 
     @Override
@@ -76,14 +80,15 @@ public class DonateActivity extends BaseActivity implements ViewPager.OnPageChan
 
     @Override
     public void onClick(View v) {
-        mBillingProcessor.purchase(this, Keys.SKU_NAMES.get(mCurrentPosition));
+        mBillingProcessor.purchase(this, mDonateSKUs.get(mCurrentPosition).productId);
     }
 
     @Override
     public void onBillingInitialized() {
+        mDonateSKUs = mBillingProcessor.getPurchaseListingDetails(Keys.SKU_NAMES);
+        Collections.sort(mDonateSKUs, new PriceComparator());
+        mPager.setAdapter(new DonatePagerAdapter(mDonateSKUs));
         mDonateButton.setClickable(true);
-        List<SkuDetails> detailsList = mBillingProcessor.getPurchaseListingDetails(Keys.SKU_NAMES);
-        mPager.setAdapter(new DonatePagerAdapter(detailsList));
     }
 
     @Override
@@ -153,6 +158,14 @@ public class DonateActivity extends BaseActivity implements ViewPager.OnPageChan
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
+        }
+    }
+
+    public class PriceComparator implements Comparator<SkuDetails> {
+
+        @Override
+        public int compare(SkuDetails lhs, SkuDetails rhs) {
+            return lhs.priceValue.compareTo(rhs.priceValue);
         }
     }
 }
