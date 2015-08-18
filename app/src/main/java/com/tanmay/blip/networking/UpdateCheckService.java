@@ -57,12 +57,15 @@ public class UpdateCheckService extends IntentService {
         try {
             Response response = BlipApplication.getInstance().client.newCall(request).execute();
             if (!response.isSuccessful()) throw new IOException();
-            Comic comic = gson.fromJson(response.body().string(), Comic.class);
-            if (!databaseManager.comicExists(comic)) {
-                databaseManager.addComic(comic);
-                Intent notifIntent = new Intent(NEW_COMIC);
-                notifIntent.putExtra(EXTRA_NUM, comic.getNum());
-                sendBroadcast(notifIntent);
+            String responseBody = response.body().string();
+            if (responseBody.substring(0, 1).equals("{")) {
+                Comic comic = gson.fromJson(responseBody, Comic.class);
+                if (!databaseManager.comicExists(comic)) {
+                    databaseManager.addComic(comic);
+                    Intent notifIntent = new Intent(NEW_COMIC);
+                    notifIntent.putExtra(EXTRA_NUM, comic.getNum());
+                    sendBroadcast(notifIntent);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

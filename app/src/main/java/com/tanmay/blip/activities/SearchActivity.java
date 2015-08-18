@@ -165,6 +165,9 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, Vi
         public void onBindViewHolder(ViewHolder holder, int position) {
             Comic comic = comics.get(position);
 
+            if (comic == null)
+                return;
+
             if (SharedPrefs.getInstance().isNightModeEnabled()) {
                 holder.backgroundCard.setCardBackgroundColor(getResources().getColor(R.color.primary_night));
                 holder.title.setTextColor(getResources().getColor(android.R.color.white));

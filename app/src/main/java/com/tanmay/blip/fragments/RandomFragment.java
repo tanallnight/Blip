@@ -140,6 +140,10 @@ public class RandomFragment extends Fragment implements View.OnClickListener, Sw
         }
         comic = databaseManager.getComic(random);
 
+        if (comic == null) {
+            loadComic(0);
+        }
+
         String comicTitle;
         if (SharedPrefs.getInstance().isTitleHidden()) {
             comicTitle = String.valueOf(comic.getNum());

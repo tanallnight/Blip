@@ -180,47 +180,49 @@ public class XKCDDownloader extends IntentService {
         final Gson gson = new Gson();
         final DatabaseManager databaseManager = new DatabaseManager(this);
         List<Integer> nums = databaseManager.getAllMissingTranscripts();
-
-        final CountDownLatch latch = new CountDownLatch(nums.size());
-        final Executor executor = Executors.newFixedThreadPool(nums.size() / 2);
-        for (int i : nums) {
-            final int index = i;
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        String url = String.format(COMICS_URL, index);
-                        Request request = new Request.Builder().url(url).build();
-                        Response response = BlipApplication.getInstance().client.newCall(request).execute();
-                        if (!response.isSuccessful()) throw new IOException();
-                        String responseBody = response.body().string();
-                        Comic comic = null;
+        if (nums.size() > 1) {
+            final CountDownLatch latch = new CountDownLatch(nums.size());
+            final Executor executor = Executors.newFixedThreadPool(nums.size() / 2);
+            for (int i : nums) {
+                final int index = i;
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
                         try {
-                            comic = gson.fromJson(responseBody, Comic.class);
-                        } catch (JsonSyntaxException e) {
-                            Crashlytics.log(1, "XKCDDownloader", e.getMessage() + " POS:" + index);
+                            String url = String.format(COMICS_URL, index);
+                            Request request = new Request.Builder().url(url).build();
+                            Response response = BlipApplication.getInstance().client.newCall(request).execute();
+                            if (!response.isSuccessful()) throw new IOException();
+                            String responseBody = response.body().string();
+                            Comic comic = null;
+                            try {
+                                comic = gson.fromJson(responseBody, Comic.class);
+                            } catch (JsonSyntaxException e) {
+                                Crashlytics.log(1, "XKCDDownloader", e.getMessage() + " POS:" + index);
+                            }
+                            if (comic != null) {
+                                databaseManager.updateComic(comic);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+                        } finally {
+                            latch.countDown();
                         }
-                        if (comic != null) {
-                            databaseManager.updateComic(comic);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
-                    } finally {
-                        latch.countDown();
                     }
-                }
-            });
-        }
+                });
+            }
 
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                LocalBroadcastManager.getInstance(XKCDDownloader.this).sendBroadcast(new Intent(DOWNLOAD_FAIL));
+            }
+            SharedPrefs.getInstance().setLastTranscriptCheckTime(System.currentTimeMillis());
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
+        } else {
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
         }
-        SharedPrefs.getInstance().setLastTranscriptCheckTime(System.currentTimeMillis());
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
-
     }
 
     private void downloadAll() {
