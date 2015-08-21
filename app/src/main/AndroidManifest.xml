@@ -59,6 +59,35 @@
             android:label="@string/title_menu_settings"
             android:parentActivityName=".activities.MainActivity" />
 
+        <activity android:name=".activities.ExternalLinkActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="xkcd.com"
+                    android:scheme="http" />
+                <data
+                    android:host="www.xkcd.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.xkcd.com"
+                    android:scheme="http" />
+                <data
+                    android:host="xkcd.com"
+                    android:scheme="https" />
+                <data
+                    android:host="m.xkcd.com"
+                    android:scheme="https" />
+                <data
+                    android:host="www.xkcd.com"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".activities.DonateActivity"
             android:label="@string/title_menu_donate"
