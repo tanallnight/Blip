@@ -1,26 +1,32 @@
 /*
- * Copyright 2015, Tanmay Parikh
+ *   Copyright 2015, Tanmay Parikh
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  */
 
 package com.tanmay.blip.utils;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.support.v4.app.ShareCompat;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,8 +35,14 @@ import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Response;
 import com.tanmay.blip.R;
 import com.tanmay.blip.activities.MainActivity;
+import com.tanmay.blip.models.Comic;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Random;
 
 public class BlipUtils {
@@ -44,6 +56,34 @@ public class BlipUtils {
                     .build();
         }
     };
+
+    public static String createSubhead(Comic comic, Calendar calendar, SimpleDateFormat dateFormat) {
+        calendar.set(Calendar.YEAR, Integer.parseInt(comic.getYear()));
+        calendar.set(Calendar.MONTH, Integer.parseInt(comic.getMonth()) - 1);
+        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(comic.getDay()));
+        return dateFormat.format(calendar.getTime());
+    }
+
+    public static void shareImage(Bitmap bitmap, Activity activity, int num) {
+        File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "Blip");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "Blip" + File.separator + num + ".png");
+        try {
+            file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(baos.toByteArray());
+            fos.close();
+            baos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Intent shareImageIntent = ShareCompat.IntentBuilder.from(activity).setType("image/png").setStream(Uri.fromFile(file)).getIntent();
+        activity.startActivity(shareImageIntent);
+    }
 
     public static int randInt(int min, int max) {
         Random rand = new Random();

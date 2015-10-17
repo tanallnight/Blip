@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2015, Tanmay Parikh
+  ~   Copyright 2015, Tanmay Parikh
   ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
   ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~  http://www.apache.org/licenses/LICENSE-2.0
   ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,13 +22,15 @@
     android:background="#343434"
     android:orientation="vertical">
 
-
     <ImageView
         android:id="@+id/img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:scaleType="fitCenter" />
+        android:paddingBottom="56dp"
+        android:paddingTop="56dp"
+        android:scaleType="fitCenter"
+        tools:src="@drawable/i_could_care_less" />
 
     <FrameLayout
         android:id="@+id/topBar"
@@ -48,14 +51,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_marginLeft="64dp"
+            android:orientation="vertical"
+            android:paddingRight="64dp">
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="64dp"
-                android:layout_marginRight="16dp"
                 android:ellipsize="marquee"
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -66,14 +69,89 @@
                 android:id="@+id/number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="64dp"
-                android:layout_marginRight="16dp"
+                android:ellipsize="marquee"
+                android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:textColor="@android:color/white"
                 tools:text="Rulebook" />
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/link"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_insert_link" />
+
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:background="#44000000"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/favourite"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_favorite_outline" />
+
+        <ImageView
+            android:id="@+id/alt"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_format_align_left" />
+
+        <ImageView
+            android:id="@+id/transcript"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_receipt" />
+
+        <ImageView
+            android:id="@+id/explain"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_help" />
+
+        <ImageView
+            android:id="@+id/open_in_browser"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_open_in_browser" />
+
+        <ImageView
+            android:id="@+id/share"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="16dp"
+            android:src="@drawable/ic_share" />
+
+    </LinearLayout>
 
 </FrameLayout>

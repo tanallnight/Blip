@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~   Copyright 2015, Tanmay Parikh
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/title_setting_display">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="night_mode"
+            android:summary="Turn UI dark for night reading"
+            android:title="Night Mode" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_comic_number"
+            android:summary="Comic number will be shown with the title of the comic"
+            android:title="Display comic number" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Search">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="search_transcript"
+            android:summary="Search feature will look through transcripts to return results"
+            android:title="Transcript Search" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Notification">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:summary="Display notification when a new comic is posted"
+            android:title="Notifications"
+            app:key="new_comic_notification" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="notification_vibrate"
+            android:summary="Phone will vibrate when notification arrives"
+            android:title="Vibrate phone" />
+
+        <ListPreference
+            android:defaultValue="10800"
+            android:entries="@array/settings_notification_update"
+            android:entryValues="@array/settings_notification_update_values"
+            android:key="notification_update"
+            android:summary="Interval to check for a new comic"
+            android:title="Update Interval" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
