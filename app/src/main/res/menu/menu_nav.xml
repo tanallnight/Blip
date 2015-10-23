@@ -45,6 +45,12 @@
             android:title="@string/title_menu_whatif" />
 
         <item
+            android:id="@+id/search"
+            android:checked="true"
+            android:icon="@drawable/ic_search"
+            android:title="@string/title_menu_search" />
+
+        <item
             android:id="@+id/tools_section"
             android:title="@string/title_menu_extras">
             <menu>

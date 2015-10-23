@@ -56,6 +56,10 @@
             android:parentActivityName=".activities.MainActivity" />
 
         <activity
+            android:name=".activities.WhatIfDetailActivity"
+            android:parentActivityName=".activities.MainActivity" />
+
+        <activity
             android:name=".activities.AboutActivity"
             android:label="@string/title_menu_about"
             android:parentActivityName=".activities.MainActivity" />
@@ -98,6 +102,10 @@
             android:name=".activities.DonateActivity"
             android:label="@string/title_menu_donate"
             android:parentActivityName=".activities.MainActivity" />
+
+        <service
+            android:name=".networking.WhatIfIntentService"
+            android:exported="false" />
 
         <service
             android:name=".networking.UpdateCheckService"

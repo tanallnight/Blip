@@ -21,6 +21,8 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -136,14 +138,13 @@ public class ImageActivity extends AppCompatActivity implements ComicManager.Com
             }
         });
 
-        if (mComic.getLink().equals(""))
-            mLink.setVisibility(View.GONE);
-
     }
 
     @Override
     public void onLoadSuccess(Comic comic) {
         mComic = comic;
+        if (mComic.getLink().equals(""))
+            mLink.setVisibility(View.GONE);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -172,7 +173,19 @@ public class ImageActivity extends AppCompatActivity implements ComicManager.Com
 
     @OnClick(R.id.alt)
     public void onAltTextClick() {
-        new MaterialDialog.Builder(this).content(mComic.getAlt()).show();
+        new MaterialDialog.Builder(this).content(mComic.getAlt())
+                .autoDismiss(false)
+                .positiveText(R.string.dialog_option_copy)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        ClipboardManager manager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                        ClipData data = ClipData.newPlainText(getPackageName(), mComic.getAlt());
+                        manager.setPrimaryClip(data);
+                        Toast.makeText(ImageActivity.this, "Text Copied!", Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
     }
 
     @OnClick(R.id.transcript)

@@ -18,8 +18,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/search"
-        android:icon="@drawable/ic_search"
-        android:title="@string/title_menu_search"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/resort"
+        android:icon="@drawable/ic_swap_vert_white_24dp"
+        android:title="@string/title_menu_sort"
+        app:showAsAction="always" />
 </menu>

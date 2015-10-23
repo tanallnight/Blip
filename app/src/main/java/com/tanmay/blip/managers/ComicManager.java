@@ -74,7 +74,8 @@ public class ComicManager {
         BlipApplication.getInstance().client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(Response response) throws IOException {
-                Comic comic = mGson.fromJson(response.body().string(), Comic.class);
+                String responseText = response.body().string();
+                Comic comic = mGson.fromJson(responseText, Comic.class);
                 mDatabaseManager.addComic(comic);
                 mLoadListener.onLoadSuccess(comic);
             }

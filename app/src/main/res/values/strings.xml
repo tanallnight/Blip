@@ -73,4 +73,6 @@
     <string name="item_settings_notification_update_2">6 Hours</string>
     <string name="item_settings_notification_update_3">12</string>
     <string name="item_settings_notification_update_4">1 Day</string>
+    <string name="title_menu_sort">Sort</string>
+    <string name="dialog_option_copy">Copy</string>
 </resources>

@@ -34,6 +34,7 @@ import com.tanmay.blip.R;
 import com.tanmay.blip.fragments.FavouritesFragment;
 import com.tanmay.blip.fragments.FeedFragment;
 import com.tanmay.blip.fragments.RandomFragment;
+import com.tanmay.blip.fragments.WhatIfFragment;
 import com.tanmay.blip.managers.SharedPrefs;
 
 import butterknife.Bind;
@@ -109,16 +110,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
-        } else if (item.getItemId() == R.id.search) {
-            startActivity(new Intent(this, SearchActivity.class));
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.manu_main, menu);
-        return true;
     }
 
     @Override
@@ -129,16 +122,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new FeedFragment(), FEED_FRAGMENT).commit();
                 return true;
             case R.id.random:
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new RandomFragment(), FEED_FRAGMENT).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new RandomFragment(), RANDOM_FRAGMENT).commit();
                 return true;
             case R.id.favourite:
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new FavouritesFragment(), FEED_FRAGMENT).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new FavouritesFragment(), FAVOURITES_FRAGMENT).commit();
                 return true;
             case R.id.download:
                 startActivity(new Intent(this, OfflineActivity.class));
                 return true;
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.whatif:
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new WhatIfFragment(), WHAT_IF_FRAGMENT).commit();
                 return true;
         }
         return false;

@@ -15,9 +15,10 @@
  *
  */
 
-package com.tanmay.blip.networking;
+package com.tanmay.blip.fragments;
 
-public class DownloadWhatIfsFragment {
+import android.support.v4.app.Fragment;
 
+public class SearchFragment extends Fragment {
 
 }
