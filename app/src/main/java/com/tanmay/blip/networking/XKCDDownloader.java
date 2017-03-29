@@ -29,6 +29,7 @@ import com.tanmay.blip.BlipApplication;
 import com.tanmay.blip.database.DatabaseManager;
 import com.tanmay.blip.database.SharedPrefs;
 import com.tanmay.blip.models.Comic;
+import com.tanmay.blip.utils.UnicodeUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -91,7 +92,8 @@ public class XKCDDownloader extends IntentService {
         try {
             Response response = BlipApplication.getInstance().client.newCall(request).execute();
             if (!response.isSuccessful()) throw new IOException();
-            Comic comic = gson.fromJson(response.body().string(), Comic.class);
+            String responseBody = UnicodeUtils.unescapeUTF8(response.body().string());
+            Comic comic = gson.fromJson(responseBody, Comic.class);
             databaseManager.addComic(comic);
             LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(DOWNLOAD_SUCCESS));
         } catch (IOException e) {
@@ -138,7 +140,7 @@ public class XKCDDownloader extends IntentService {
                             Request request = new Request.Builder().url(url).build();
                             Response response = BlipApplication.getInstance().client.newCall(request).execute();
                             if (!response.isSuccessful()) throw new IOException();
-                            String responseBody = response.body().string();
+                            String responseBody = UnicodeUtils.unescapeUTF8(response.body().string());
                             Comic comic = null;
                             try {
                                 comic = gson.fromJson(responseBody, Comic.class);
@@ -193,7 +195,7 @@ public class XKCDDownloader extends IntentService {
                             Request request = new Request.Builder().url(url).build();
                             Response response = BlipApplication.getInstance().client.newCall(request).execute();
                             if (!response.isSuccessful()) throw new IOException();
-                            String responseBody = response.body().string();
+                            String responseBody = UnicodeUtils.unescapeUTF8(response.body().string());
                             Comic comic = null;
                             try {
                                 comic = gson.fromJson(responseBody, Comic.class);
@@ -250,7 +252,7 @@ public class XKCDDownloader extends IntentService {
                                 Request newReq = new Request.Builder().url(url).build();
                                 Response newResp = BlipApplication.getInstance().client.newCall(newReq).execute();
                                 if (!newResp.isSuccessful()) throw new IOException();
-                                String resp = newResp.body().string();
+                                String resp = UnicodeUtils.unescapeUTF8(newResp.body().string());
                                 Comic comic1 = null;
                                 try {
                                     comic1 = gson.fromJson(resp, Comic.class);
